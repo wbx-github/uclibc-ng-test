@@ -40,9 +40,9 @@ static const struct
 static int
 do_test (void)
 {
+#if __UCLIBC_HAS_SHA512_CRYPT_IMPL__
   int result = 0;
 
-#if __UCLIBC_HAS_SHA512_CRYPT_IMPL__
   int i;
 
   for (i = 0; i < ntests; ++i)
@@ -56,9 +56,10 @@ do_test (void)
 	  result = 1;
 	}
     }
-#endif
-
   return result;
+#else
+  return 23;
+#endif
 }
 
 #define TIMEOUT 6

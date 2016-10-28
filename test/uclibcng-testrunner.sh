@@ -28,11 +28,18 @@ die() {
 test -s uclibcng-testrunner.in || die uclibcng-testrunner.in not found
 
 nfail=0
+nskip=0
 npass=0
 while read expected_ret tst_src_name binary_name subdir cmd; do
 	printf '.... %s\r' "$binary_name"
 	(cd $subdir && eval "$cmd" >$binary_name.out 2>&1) </dev/null
 	ret=$?
+	test $ret = "23" && {
+		echo "SKIP $binary_name"
+		nskip=`expr $nskip + 1`
+		sed 's/^/	/' <$subdir/$binary_name.out
+		continue
+	}
 	test $ret = "$expected_ret" || {
 		echo "FAIL $binary_name got $ret expected $expected_ret"
 		nfail=`expr $nfail + 1`
@@ -57,6 +64,7 @@ while read expected_ret tst_src_name binary_name subdir cmd; do
 		break
 	done
 done <uclibcng-testrunner.in
+echo Total skipped: $nskip
 echo Total failed: $nfail
 echo Total passed: $npass
 test $nfail = 0
