@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[])
 {
+#if defined(__UCLIBC_HAS_RPC__)
 	struct rpcent *ent;
 
 	while ((ent = getrpcent()) != NULL) {
@@ -13,6 +14,6 @@ int main(int argc, char *argv[])
 	}
 
 	endrpcent();
-
+#endif
 	return 0;
 }

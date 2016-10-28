@@ -1,6 +1,5 @@
-# uClibc locale tests
+# uClibc-ng locale tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
-#	 tst_mbtowc tst_strcoll tst_strfmon tst_strxfrm    \
 
 TESTS := tst_iswalnum tst_iswalpha tst_iswcntrl          \
 	 tst_iswctype tst_iswdigit tst_iswgraph          \

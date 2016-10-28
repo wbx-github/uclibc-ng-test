@@ -1,4 +1,4 @@
-# uClibc math tests
+# uClibc-ng math tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 # libm-test.c is a generated file used by the tests internally so skip it
@@ -9,12 +9,6 @@ TESTS_DISABLED += gamma
 ifeq ($(UCLIBC_HAS_LONG_DOUBLE_MATH),)
 TESTS_DISABLED += test-ldouble test-ildoubl compile_test c99_test
 CFLAGS_basic-test := -DNO_LONG_DOUBLE
-endif
-ifeq ($(DO_C99_MATH),)
-TESTS_DISABLED += test-float test-ifloat test-double test-idouble rint signgam ilogb
-endif
-ifeq ($(UCLIBC_HAS_FPU),)
-TESTS_DISABLED += test-fpucw
 endif
 
 DODIFF_rint     := 1

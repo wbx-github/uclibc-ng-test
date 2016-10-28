@@ -1,4 +1,4 @@
-# uClibc TLS tests
+# uClibc-ng TLS tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 TESTS := tst-tls1 tst-tls2 tst-tls3 tst-tls4 tst-tls5 tst-tls6 tst-tls7	\
@@ -10,34 +10,6 @@ TESTS_DISABLED := tst-tls1-static tst-tls2-static tst-tls9-static
 # test always fails for every architecture,
 # guessing some unimplemented check or feature
 TESTS_DISABLED += tst-tls16
-
-#all these tests require shared libraries
-ifeq ($(HAVE_SHARED),)
-TESTS_DISABLED := $(TESTS)
-endif
-
-# All these tests need tls.h, which is not installed with glibc
-GLIBC_TESTS_DISABLED := $(addsuffix _glibc,$(filter-out $(TESTS_DISABLED),$(TESTS)))
-
-
-PTDIR := $(top_builddir)libpthread/nptl
-SYSDEPS_DIR := $(top_srcdir)libc/sysdeps
-
-EXTRA_CFLAGS := -DNOT_IN_libc=1 \
-	-std=gnu99 -I. \
-	-I$(SYSDEPS_DIR)/linux \
-	-I$(SYSDEPS_DIR)/linux/$(TARGET_ARCH) \
-	-I$(PTDIR)	\
-	-I$(PTDIR)/sysdeps/unix/sysv/linux/$(TARGET_ARCH)	\
-	-I$(PTDIR)/sysdeps/$(TARGET_ARCH)			\
-	-I$(PTDIR)/sysdeps/unix/sysv/linux			\
-	-I$(PTDIR)/sysdeps/pthread				\
-	-I$(PTDIR)/sysdeps/pthread/bits				\
-	-I$(PTDIR)/sysdeps/generic				\
-	-I$(top_builddir)ldso/include				\
-	-I$(top_builddir)ldso/ldso/$(TARGET_ARCH)		\
-	-I$(top_builddir)include				\
-	-include $(top_builddir)include/libc-symbols.h
 
 tlsmod17a-suffixes := 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
 tlsmod18a-suffixes := 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19

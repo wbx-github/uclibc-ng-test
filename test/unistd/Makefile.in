@@ -1,4 +1,4 @@
-# uClibc unistd tests
+# uClibc-ng unistd tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 TESTS_DISABLED :=
@@ -34,11 +34,3 @@ endif
 # for embedded systems 4 GB disk space is not available
 TESTS_DISABLED += tst-posix_fallocate64 tst-fallocate64
 
-# getconf.c lives in utils/
-# Testsuite cannot currently be built with O= anyway, so hardcode path here
-getconf.c:
-	$(LN_S) ../../utils/$(@F) .
-EXTRA_CLEAN    += getconf.c
-TESTS_DISABLED += getconf
-CFLAGS_getconf = -DGETCONF_DIR='"$(CURDIR)"'
-shell_tst-getconf: getconf getconf_glibc

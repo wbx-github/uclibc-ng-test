@@ -1,8 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <tls.h>
-
 #if USE_TLS && HAVE___THREAD
 
 #define AL 4096

@@ -17,7 +17,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
-#include <pthreadP.h>
+#include <pthread.h>
 #include <semaphore.h>
 
 static const struct

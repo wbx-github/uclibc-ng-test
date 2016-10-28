@@ -14,9 +14,9 @@ int
 main (void)
 {
   struct A *p;
+#ifdef USE_TLS__THREAD
   if (local.a != 1 || local.b != 2 || local.c != 3)
     abort ();
-#ifdef USE_TLS__THREAD
   if (a1.a != 4 || a1.b != 5 || a1.c != 6)
     abort ();
   if (a2.a != 22 || a2.b != 23 || a2.c != 24)

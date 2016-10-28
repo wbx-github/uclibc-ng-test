@@ -38,7 +38,7 @@
 #include <sys/un.h>
 #include <sys/wait.h>
 
-#include "pthreadP.h"
+#define SIGCANCEL   __SIGRTMIN
 
 
 /* Since STREAMS are not supported in the standard Linux kernel and

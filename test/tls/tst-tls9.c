@@ -1,9 +1,7 @@
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <link.h>
-#include <tls.h>
 
 #define TEST_FUNCTION do_test ()
 static int

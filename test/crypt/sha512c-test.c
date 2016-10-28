@@ -41,6 +41,8 @@ static int
 do_test (void)
 {
   int result = 0;
+
+#if __UCLIBC_HAS_SHA512_CRYPT_IMPL__
   int i;
 
   for (i = 0; i < ntests; ++i)
@@ -54,6 +56,7 @@ do_test (void)
 	  result = 1;
 	}
     }
+#endif
 
   return result;
 }

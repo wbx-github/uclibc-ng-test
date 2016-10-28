@@ -2,8 +2,6 @@
 #undef _LIBC
 #include <stdio.h>
 
-#include <tls.h>
-
 #ifdef USE_TLS
 # include "tls-macros.h"
 

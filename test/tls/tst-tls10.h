@@ -1,4 +1,3 @@
-#include <tls.h>
 #include <stdlib.h>
 
 #if defined USE_TLS && defined HAVE___THREAD \

@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include <tls.h>
 
 #if USE_TLS && HAVE___THREAD
 

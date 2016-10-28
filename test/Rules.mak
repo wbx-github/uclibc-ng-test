@@ -1,9 +1,5 @@
-# Rules.mak for uClibc test subdirs
-#
-# Copyright (C) 2000-2006 Erik Andersen <andersen@uclibc.org>
-#
+# Rules.mak for uClibc-ng-test subdirs
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
-#
 
 .SUFFIXES:
 
@@ -13,30 +9,7 @@ abs_top_builddir ?= $(shell cd $(top_builddir); pwd)/
 TESTDIR=$(top_builddir)test/
 
 include $(top_srcdir)Rules.mak
-ifeq ($(filter $(clean_targets) CLEAN_%,$(MAKECMDGOALS)),)
-ifeq ($(HAVE_DOT_CONFIG),)
-$(error no HAVE_DOT_CONFIG, failed to read .config)
-endif
-endif
 
-ifdef UCLIBC_LDSO
-ifeq (,$(findstring /,$(UCLIBC_LDSO)))
-UCLIBC_LDSO := $(UCLIBC_LDSO)
-else
-UCLIBC_LDSO := $(notdir $(UCLIBC_LDSO))
-endif
-else
-UCLIBC_LDSO := $(notdir $(firstword $(wildcard $(top_builddir)lib/ld*)))
-endif
-ifndef TEST_INSTALLED_UCLIBC
-ifeq ($(LDSO_SAFE_RUNPATH),y)
-UCLIBC_PATH := $(abs_top_builddir)lib
-else
-UCLIBC_PATH := $(top_builddir)lib
-endif
-else
-UCLIBC_PATH := $(RUNTIME_PREFIX)$(MULTILIB_DIR)
-endif
 #--------------------------------------------------------
 # Ensure consistent sort order, 'gcc -print-search-dirs' behavior, etc.
 LC_ALL:= C
@@ -61,20 +34,10 @@ export TARGET_ARCH
 RM_R = $(Q)$(RM) -r
 LN_S = $(Q)$(LN) -fs
 
-ifneq ($(KERNEL_HEADERS),)
-ifeq ($(patsubst /%,/,$(KERNEL_HEADERS)),/)
-# Absolute path in KERNEL_HEADERS
-KERNEL_INCLUDES += -I$(KERNEL_HEADERS)
-else
-# Relative path in KERNEL_HEADERS
-KERNEL_INCLUDES += -I$(top_builddir)$(KERNEL_HEADERS)
-endif
-endif
-
 XCOMMON_CFLAGS := -I$(top_builddir)test -D_GNU_SOURCE
 XWARNINGS      += $(CFLAG_-Wstrict-prototypes)
-CFLAGS         := -nostdinc -I$(top_builddir)$(LOCAL_INSTALL_PATH)/usr/include
-CFLAGS         += $(XCOMMON_CFLAGS) $(KERNEL_INCLUDES) $(CC_INC)
+CFLAGS         ?= 
+CFLAGS         += $(XCOMMON_CFLAGS)
 CFLAGS         += $(OPTIMIZATION) $(CPU_CFLAGS) $(XWARNINGS)
 
 $(eval $(call check-gcc-var,-Wno-missing-field-initializers))
@@ -84,37 +47,8 @@ CFLAGS         += $(CFLAG_-Wno-missing-field-initializers)
 # Just adding -Os for now.
 HOST_CFLAGS    += $(XCOMMON_CFLAGS) -Os $(XWARNINGS) -std=gnu99
 
-LDFLAGS        := $(CPU_LDFLAGS-y) -Wl,-z,now
-ifeq ($(DODEBUG),y)
-	CFLAGS        += -g
-	HOST_CFLAGS   += -g
-	LDFLAGS       += -Wl,-g
-	HOST_LDFLAGS  += -Wl,-g
-endif
-
-ifeq ($(DOSTRIP),y)
-	LDFLAGS       += -Wl,-s
-	HOST_LDFLAGS  += -Wl,-s
-endif
-
-ifneq ($(HAVE_SHARED),y)
-	LDFLAGS       += -Wl,-static -static-libgcc
-endif
-
-ifndef TEST_INSTALLED_UCLIBC
-LDFLAGS += -B$(UCLIBC_PATH) -Wl,-rpath,$(UCLIBC_PATH):$(shell pwd) -Wl,-rpath-link,$(UCLIBC_PATH):$(shell pwd)
-else
-LDFLAGS += -Wl,-rpath,$(shell pwd)
-endif
-
-ifeq ($(findstring -static,$(LDFLAGS)),)
-LDFLAGS += -Wl,--dynamic-linker,$(UCLIBC_PATH)/$(UCLIBC_LDSO)
-endif
-
-ifeq ($(LDSO_GNU_HASH_SUPPORT),y)
-# Check for binutils support is done on root Rules.mak
-LDFLAGS += $(CFLAG_-Wl--hash-style=gnu)
-endif
+#LDFLAGS := $(CPU_LDFLAGS-y) -Wl,-z,now
+#LDFLAGS += -Wl,-rpath,$(shell pwd)
 
 ifneq ($(strip $(UCLIBC_EXTRA_CFLAGS)),"")
 CFLAGS += $(call qstrip,$(UCLIBC_EXTRA_CFLAGS))

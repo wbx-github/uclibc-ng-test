@@ -1,8 +1,6 @@
 /* glibc test for TLS in ld.so.  */
 #include <stdio.h>
 
-#include <tls.h>
-
 #ifdef USE_TLS
 # include "tls-macros.h"
 

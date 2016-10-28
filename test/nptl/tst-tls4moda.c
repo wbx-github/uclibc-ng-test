@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <tls.h>
 
 #if HAVE___THREAD && defined HAVE_TLS_MODEL_ATTRIBUTE
 

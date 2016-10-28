@@ -18,7 +18,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
-#include <atomic.h>
 
 #ifndef atomic_t
 # define atomic_t int

@@ -1,4 +1,4 @@
-# uClibc stat tests
+# uClibc-ng stat tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 ifeq ($(UCLIBC_HAS_LFS),)

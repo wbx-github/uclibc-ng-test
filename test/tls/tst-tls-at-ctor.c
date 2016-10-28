@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <tls.h>
 
 #define TLS_VAR_INIT_VALUE 99
 

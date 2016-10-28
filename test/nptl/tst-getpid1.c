@@ -5,7 +5,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <bits/stackinfo.h>
+
+#if defined(__hppa__)
+#define _STACK_GROWS_UP		1
+#else
+#define _STACK_GROWS_DOWN	1
+#endif
 
 #ifndef TEST_CLONE_FLAGS
 #define TEST_CLONE_FLAGS 0

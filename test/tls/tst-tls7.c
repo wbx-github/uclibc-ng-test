@@ -1,14 +1,7 @@
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <tls.h>
 #include <link.h>
-#ifdef __UCLIBC__
-#include "dl-elf.h"
-#include "dl-hash.h"
-#endif
-
 
 #define TEST_FUNCTION do_test ()
 static int

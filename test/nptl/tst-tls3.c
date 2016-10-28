@@ -25,8 +25,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <pthreaddef.h>
-#include <tls.h>
 
 #define THE_SIG SIGUSR1
 

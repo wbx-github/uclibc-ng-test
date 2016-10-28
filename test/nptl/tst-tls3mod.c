@@ -23,8 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <pthreaddef.h>
-#include <tls.h>
 
 #if HAVE___THREAD
 

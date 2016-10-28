@@ -1,4 +1,4 @@
-# uClibc argp tests
+# uClibc-ng argp tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 TESTS := $(addprefix argp-, ex1 ex2 ex3 ex4 test) \

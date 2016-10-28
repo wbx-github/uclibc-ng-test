@@ -1,6 +1,5 @@
-# uClibc locale tests
+# uClibc-ng locale tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
-#	 tst_mbtowc tst_strcoll tst_strfmon tst_strxfrm    \
 
 TESTS := bug-iconv-trans bug-usesetlocale collate-test dump-ctype \
 	 gen-unicode-ctype show-ucs-data tst-ctype \

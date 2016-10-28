@@ -1,9 +1,5 @@
-# Makefile for uClibc
-#
-# Copyright (C) 2000-2005 Erik Andersen <andersen@uclibc.org>
-#
+# Makefile for uClibc-ng-test
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
-#
 
 top_srcdir=../
 top_builddir=../
@@ -12,41 +8,9 @@ include Rules.mak
 ALL_SUBDIRS := $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
 DIRS := $(ALL_SUBDIRS)
-ifneq ($(HAVE_SHARED)$(UCLIBC_HAS_THREADS),yy)
-	DIRS := $(filter-out dlopen,$(DIRS))
-endif
-ifneq ($(findstring -static,$(LDFLAGS)),)
-	DIRS := $(filter-out dlopen,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_THREADS)$(ARCH_USE_MMU),yy)
-	DIRS := $(filter-out pthread,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_FLOATS),y)
-	DIRS := $(filter-out math,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_FULL_RPC),y)
-	DIRS := $(filter-out rpc,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_REGEX),y)
-	DIRS := $(filter-out regex,$(DIRS))
-endif
-ifneq ($(HAVE_SHARED)$(UCLIBC_HAS_THREADS_NATIVE),yy)
-	DIRS := $(filter-out tls nptl,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_WCHAR),y)
-	DIRS := $(filter-out locale-mbwc,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_LOCALE),y)
-	DIRS := $(filter-out locale,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_CRYPT_IMPL),y)
-	DIRS := $(filter-out crypt,$(DIRS))
-endif
-ifeq ($(HAS_NO_THREADS),y)
-	DIRS := $(filter-out pthread,$(DIRS))
-endif
-ifneq ($(UCLIBC_HAS_ARGP),y)
-	DIRS := $(filter-out argp,$(DIRS))
+
+ifeq ($(NO_LOCALE),1)
+DIRS := $(filter-out locale,$(DIRS))
 endif
 
 test check all: run
@@ -57,13 +21,7 @@ gen:
 	-rm -f $(top_builddir)/test/uclibcng-testrunner.in
 	$(MAKE) run UCLIBCNG_GENERATE_TESTRUNNER=1
 
-compile: $(top_builddir)$(LOCAL_INSTALL_PATH) subdirs_compile
-
-$(top_builddir)$(LOCAL_INSTALL_PATH):
-	$(Q)$(MAKE) -C $(top_builddir) $(LOCAL_INSTALL_PATH)
-
-tags:
-	ctags -R
+compile: subdirs_compile
 
 clean: subdirs_clean
 
@@ -78,12 +36,10 @@ $(patsubst %, _dir_%, $(DIRS)) : dummy
 
 $(patsubst %, _dirrun_%, $(DIRS)) : dummy
 	$(Q)$(MAKE) -C $(patsubst _dirrun_%, %, $@) run \
-		UCLIBCNG_TEST_SUBDIR=$(strip $(patsubst _dirrun_%, %, $@)) \
-		KCONFIG_CONFIG=$(KCONFIG_CONFIG)
+		UCLIBCNG_TEST_SUBDIR=$(strip $(patsubst _dirrun_%, %, $@))
 
 $(patsubst %, _dircompile_%, $(DIRS)) : dummy
-	$(Q)$(MAKE) -C $(patsubst _dircompile_%, %, $@) compile \
-		KCONFIG_CONFIG=$(KCONFIG_CONFIG)
+	$(Q)$(MAKE) -C $(patsubst _dircompile_%, %, $@) compile
 
 $(patsubst %, _dirclean_%, $(ALL_SUBDIRS)) : dummy
 	$(Q)$(MAKE) -C $(patsubst _dirclean_%, %, $@) clean

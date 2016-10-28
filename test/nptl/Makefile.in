@@ -1,4 +1,4 @@
-# uClibc NPTL tests
+# uClibc-ng NPTL tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 TESTS := tst-align tst-align2 tst-atfork1 tst-attr1 tst-attr2 tst-attr3	\
@@ -41,7 +41,7 @@ TESTS := tst-align tst-align2 tst-atfork1 tst-attr1 tst-attr2 tst-attr3	\
 	tst-getpid1 tst-getpid2 tst-getpid3 tst-join6 tst-tsd6 \
 	tst-oddstacklimit tst-oncex3 tst-oncex4 tst-rwlock2a  \
 	tst-basic7 tst-signal7 tst-vfork1x tst-vfork2x tst-sem10 tst-sem11 \
-	tst-sem12 tst-typesizes tst-initializers1-c89 tst-initializers1-c99 \
+	tst-sem12 tst-initializers1-c89 tst-initializers1-c99 \
 	tst-initializers1-gnu89 tst-initializers1-gnu99 \
 	tst-atfork2
 
@@ -54,33 +54,6 @@ TESTS += tst-clock tst-clock_nanosleep tst-cpuclock1 tst-cpuclock2	\
 	tst-mqueue7 tst-mqueue8 tst-mqueue9 tst-timer2 tst-timer3	\
 	tst-timer4 tst-timer5
 
-ifeq ($(UCLIBC_HAS_OBSOLETE_BSD_SIGNAL),)
-TESTS_DISABLED += tst-exec2 tst-exec3 tst-exec4
-endif
-
-ifeq ($(UCLIBC_SUSV4_LEGACY),)
-TESTS_DISABLED += tst-basic5 tst-cancel4 tst-cancel5 tst-cancelx4
-endif
-
-GLIBC_TESTS_DISABLED := tst-eintr1_glibc tst-eintr2_glibc \
-	tst-eintr3_glibc tst-eintr4_glibc tst-eintr5_glibc \
-	tst-tls1_glibc tst-tls2_glibc
-
-
-ifeq ($(HAVE_SHARED),)
-TESTS_DISABLED += tst-tls3 tst-tls4 tst-tls5 tst-dlsym1 tst-fini1	\
-		tst-unload
-else
-GLIBC_TESTS_DISABLED += tst-tls3_glibc tst-tls4_glibc tst-tls5_glibc
-endif
-
-EXTRA_CFLAGS := -DNOT_IN_libc=1 -D_LIBC -D__USE_GNU -std=gnu99 \
-	$(PTINC) \
-	-I$(top_srcdir)libc/sysdeps/linux/$(TARGET_ARCH) \
-	-I$(top_srcdir)libc/sysdeps/linux \
-	-I$(top_builddir)include \
-	-include $(top_builddir)include/libc-symbols.h
-
 ifeq ($(TARGET_ARCH),i386)
 CFLAGS_tst-align := -malign-double -mpreferred-stack-boundary=4
 endif
@@ -89,45 +62,21 @@ CFLAGS_tst-align := -malign-double -mpreferred-stack-boundary=4 -msse
 endif
 CFLAGS_tst-cleanup4aux.o := -W
 CFLAGS_tst-initializers1 := -W -Werror
-CFLAGS_tst-tls3mod.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls4moda.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls4modb.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls5mod.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls5moda.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls5modb.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls5modc.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls5modd.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls5mode.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
-CFLAGS_tst-tls5modf.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
+CFLAGS_tst-tls3mod.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls4moda.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls4modb.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls5mod.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls5moda.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls5modb.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls5modc.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls5modd.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls5mode.so := -fPIC -DPIC -DSHARED -shared
+CFLAGS_tst-tls5modf.so := -fPIC -DPIC -DSHARED -shared
 
-CFLAGS_tst-fini1mod.so := -fPIC -DPIC -DSHARED -shared -DNOT_IN_libc
+CFLAGS_tst-fini1mod.so := -fPIC -DPIC -DSHARED -shared
 LDFLAGS_tst-cond11 = -lrt
 LDFLAGS_tst-cond19 = -lrt
 
-LDFLAGS_tst-cancelx2 = -lc
-LDFLAGS_tst-cancelx3 = -lc
-LDFLAGS_tst-cancelx4 = -lc
-LDFLAGS_tst-cancelx6 = -lc
-LDFLAGS_tst-cancelx6 = -lc
-LDFLAGS_tst-cancelx7 = -lc
-LDFLAGS_tst-cancelx8 = -lc
-LDFLAGS_tst-cancelx9 = -lc
-LDFLAGS_tst-cancelx10 = -lc
-LDFLAGS_tst-cancelx11 = -lc
-LDFLAGS_tst-cancelx12 = -lc
-LDFLAGS_tst-cancelx13 = -lc
-LDFLAGS_tst-cancelx14 = -lc
-LDFLAGS_tst-cancelx15 = -lc
-LDFLAGS_tst-cancelx16 = -lc
-LDFLAGS_tst-cancelx18 = -lc
-LDFLAGS_tst-cancelx20 = -lc
-LDFLAGS_tst-cancelx21 = -lc
-LDFLAGS_tst-cleanupx0 = -lc
-LDFLAGS_tst-cleanupx1 = -lc
-LDFLAGS_tst-cleanupx2 = -lc
-LDFLAGS_tst-cleanupx3 = -lc
-LDFLAGS_tst-oncex3 = -lc
-LDFLAGS_tst-oncex4 = -lc
 LDFLAGS_tst-rwlock14 = -lrt
 LDFLAGS_tst-fini1 = -Wl,-rpath=./ tst-fini1mod.so
 LDFLAGS_tst-fini1mod.so = -Wl,-soname=tst-fini1mod.so
@@ -233,7 +182,6 @@ tst-cleanupx4 : tst-cleanup4aux.o
 tst-fini1: tst-fini1mod.so
 
 tst-atfork2: tst-atfork2mod.so
-tst-atfork2_glibc: tst-atfork2mod.so.glibc
 
 OPTS_tst-cancel7 = -c ./tst-cancel7
 OPTS_tst-mqueue7 = -- ./tst-mqueue7

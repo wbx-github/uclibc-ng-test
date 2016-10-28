@@ -1,5 +1,3 @@
-#include <tls.h>
-
 #ifdef USE_TLS
 #include "tls-macros.h"
 
