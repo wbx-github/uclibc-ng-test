@@ -6,6 +6,7 @@
 int
 main (void)
 {
+#if __UCLIBC_SUSV2_LEGACY__
   char *p;
   int pagesize = getpagesize ();
   int i;
@@ -20,4 +21,7 @@ main (void)
     }
 
   return 0;
+#else
+  return 23;
+#endif
 }
