@@ -1,0 +1,21 @@
+# Makefile for uClibc-ng-test
+# Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+
+include $(top_srcdir)Rules.mak
+
+all: test_compile test_gen
+
+clean:
+	$(MAKE) -C test clean
+
+test check: test_compile
+	$(Q)$(MAKE) -C test \
+		$(if $(O),top_builddir=$(O)/)
+
+test_compile: $(LOCAL_INSTALL_PATH)
+	$(Q)$(MAKE) -C test compile \
+		$(if $(O),top_builddir=$(O)/)
+
+test_gen: $(LOCAL_INSTALL_PATH)
+	$(Q)$(MAKE) -C test gen \
+		$(if $(O),top_builddir=$(O)/)
