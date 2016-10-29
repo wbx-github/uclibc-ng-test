@@ -9,6 +9,16 @@ ALL_SUBDIRS := $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
 DIRS := $(ALL_SUBDIRS)
 
+ifeq ($(NO_THREADS),1)
+DIRS := $(filter-out nptl,$(DIRS))
+DIRS := $(filter-out pthread,$(DIRS))
+DIRS := $(filter-out tls,$(DIRS))
+endif
+
+ifeq ($(NO_DL),1)
+DIRS := $(filter-out dlopen,$(DIRS))
+endif
+
 ifeq ($(NO_LOCALE),1)
 DIRS := $(filter-out locale,$(DIRS))
 endif
