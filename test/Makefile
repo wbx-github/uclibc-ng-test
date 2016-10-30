@@ -12,6 +12,13 @@ DIRS := $(ALL_SUBDIRS)
 ifeq ($(NO_THREADS),1)
 DIRS := $(filter-out nptl,$(DIRS))
 DIRS := $(filter-out pthread,$(DIRS))
+endif
+
+ifeq ($(NO_NPTL),1)
+DIRS := $(filter-out nptl,$(DIRS))
+endif
+
+ifeq ($(NO_TLS),1)
 DIRS := $(filter-out tls,$(DIRS))
 endif
 
