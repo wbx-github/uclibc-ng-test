@@ -5,21 +5,35 @@
 TESTS_DISABLED := libm-test
 
 # gamma (removed from TESTS, need to add "small errors are ok" machinery there)
-TESTS_DISABLED += gamma
-ifeq ($(UCLIBC_HAS_LONG_DOUBLE_MATH),)
-TESTS_DISABLED += test-ldouble test-ildoubl compile_test c99_test
-CFLAGS_basic-test := -DNO_LONG_DOUBLE
-endif
+TESTS_DISABLED += gamma 
+TESTS_DISABLED += test-misc test-signgam-main
+# disable long double tests, only for some architectures available
+TESTS_DISABLED += test-ldouble test-ldouble-finite test-ildoubl compile_test c99_test
+# disable tgmath tests, not implemented
+TESTS_DISABLED += test-tgmath test-tgmath2 test-tgmath-int test-tgmath-ret
 
-DODIFF_rint     := 1
-DODIFF_signgam  := 1
+CFLAGS_test-signgam-finite = -ffinite-math-only
+CFLAGS_test-signgam-finite-c99 = -ffinite-math-only -std=c99
+CFLAGS_test-signgam-finite-c11 = -ffinite-math-only -std=c11
+CFLAGS_test-signgam-uchar = -std=c99
+CFLAGS_test-signgam-uchar-init = -std=c99
+CFLAGS_test-signgam-uchar-static = -std=c99
+CFLAGS_test-signgam-uchar-init-static = -std=c99
+CFLAGS_test-signgam-uint = -std=c99
+CFLAGS_test-signgam-uint-init = -std=c99
+CFLAGS_test-signgam-uint-static = -std=c99
+CFLAGS_test-signgam-uint-init-static = -std=c99
+CFLAGS_test-signgam-ullong = -std=c99
+CFLAGS_test-signgam-ullong-init = -std=c99
+CFLAGS_test-signgam-ullong-static = -std=c99
+CFLAGS_test-signgam-ullong-init-static = -std=c99
 
 # NOTE: For basic-test we must disable the floating point optimization.
 #       Only for sh architecture because in the other architecture are disabled.
 ifeq ($(TARGET_ARCH),sh)
 CFLAGS_basic-test += -mieee
 endif
-EXTRA_CFLAGS    := -fno-builtin
+EXTRA_CFLAGS    := -fno-builtin -DNO_LONG_DOUBLE
 EXTRA_LDFLAGS   := -lm
 
 PERL := perl
@@ -28,13 +42,10 @@ MDEPS := $(wildcard test-*.c)
 $(MDEPS): libm-test.c
 
 ULP_SUFFIX :=
-ifeq ($(TARGET_ARCH),mips)
-ULP_SUFFIX:=$(if $(CONFIG_MIPS_N64_ABI),64,32)
-endif
-
 TARGET_ULP := $(if $(wildcard libm-test-ulps-$(TARGET_ARCH)$(ULP_SUFFIX)),$(TARGET_ARCH)$(ULP_SUFFIX),generic)
 
 libm-test.c: libm-test-ulps-$(TARGET_ULP) libm-test.inc gen-libm-test.pl
 	$(Q)$(PERL) ./gen-libm-test.pl -u libm-test-ulps-$(TARGET_ULP) ./libm-test.inc -o "." 2>&1 > /dev/null
+	$(Q)$(SHELL) ./gen-libm-have-vector-test.sh > libm-have-vector-test.h
 
-EXTRA_CLEAN := libm-test.c libm-test-ulps.h
+EXTRA_CLEAN := libm-test.c libm-test-ulps.h libm-have-vector-test.h

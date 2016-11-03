@@ -1,4 +1,4 @@
-/* Copyright (C) 1997, 1999, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1997-2016 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Andreas Jaeger <aj@suse.de>, 1997.
 
@@ -16,18 +16,12 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#define FUNC(function) function##l
-#define FLOAT long double
-#define TEST_MSG "testing long double (without inline functions)\n"
-#define MATHCONST(x) x##L
-#define CHOOSE(Clongdouble,Cdouble,Cfloat,Cinlinelongdouble,Cinlinedouble,Cinlinefloat) Clongdouble
-#define PRINTF_EXPR "Le"
-#define PRINTF_XEXPR "La"
-#define PRINTF_NEXPR "Lf"
-#define TEST_LDOUBLE 1
+#include "test-ldouble.h"
+#include "test-math-no-finite.h"
+#include "test-math-no-inline.h"
+#include "test-math-errno.h"
+#include "test-math-scalar.h"
 
-#ifndef __NO_MATH_INLINES
-# define __NO_MATH_INLINES
-#endif
+#define TEST_MSG "testing long double (without inline functions)\n"
 
 #include "libm-test.c"
