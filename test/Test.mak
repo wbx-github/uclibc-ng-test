@@ -9,9 +9,6 @@ endif
 ifneq ($(TESTS_DISABLED),)
 TESTS := $(filter-out $(TESTS_DISABLED),$(TESTS))
 endif
-ifeq ($(SHELL_TESTS),)
-SHELL_TESTS := $(patsubst %.sh,shell_%,$(wildcard *.sh))
-endif
 
 ifneq ($(filter-out test,$(strip $(TESTS))),$(strip $(TESTS)))
 $(error Sanity check: cannot have a test named "test.c")
@@ -27,7 +24,6 @@ RUN_TARGETS := $(sort $(addsuffix .exe,$(TARGETS)))
 COMPILE_TARGETS :=  $(sort $(COMPILE_TARGETS))
 # provide build rules even for disabled tests:
 TARGETS += $(TESTS_DISABLED)
-TARGETS += $(SHELL_TESTS)
 CFLAGS += $(CFLAGS_$(notdir $(CURDIR)))
 ifeq (1,$(UCLIBCNG_GENERATE_TESTRUNNER))
 UCLIBCNG_TEST_SUBDIR ?= $(patsubst $(realpath $(TESTDIR))/%,%,$(CURDIR))
@@ -101,12 +97,6 @@ $(TARGETS): $(TARGET_SRCS) $(MAKE_SRCS)
 	$(showlink)
 	$(Q)$(CC) $(filter-out $(CFLAGS-OMIT-$@),$(CFLAGS)) $(EXTRA_CFLAGS) $(CFLAGS_$(notdir $(CURDIR))) $(CFLAGS_$@) -c $@.c -o $@.o
 	$(Q)$(CC) $(filter-out $(LDFLAGS-OMIT-$@),$(LDFLAGS)) $@.o -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS_$@)
-
-shell_%:
-	$(showtest)
-	$(Q)$(if $(PRE_RUN_$(@)),$(PRE_RUN_$(@)))
-	$(Q)$(SHELL) $(patsubst shell_%,%.sh,$(binary_name))
-	$(Q)$(if $(POST_RUN_$(@)),$(POST_RUN_$(@)))
 
 %.so: %.c
 	$(showlink)
