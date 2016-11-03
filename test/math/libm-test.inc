@@ -12768,14 +12768,14 @@ main (int argc, char **argv)
 #endif
 
   /* Bessel functions:  */
-#if defined __DO_XSI_MATH__ && !(defined TEST_LDOUBLE || defined TEST_FLOAT)
+#if defined(__GLIBC__) && !defined(__UCLIBC__)
   j0_test ();
   j1_test ();
   jn_test ();
   y0_test ();
   y1_test ();
   yn_test ();
-#endif /* __DO_XSI_MATH__ */
+#endif
 
   if (output_ulps)
     fclose (ulps_file);
