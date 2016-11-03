@@ -26,6 +26,10 @@ ifeq ($(NO_DL),1)
 DIRS := $(filter-out dlopen,$(DIRS))
 endif
 
+ifeq ($(NO_WCHAR),1)
+DIRS := $(filter-out locale-mbwc,$(DIRS))
+endif
+
 ifeq ($(NO_LOCALE),1)
 DIRS := $(filter-out locale,$(DIRS))
 endif
