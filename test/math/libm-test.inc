@@ -118,7 +118,7 @@
 #include <complex.h>
 #include <math.h>
 #include <float.h>
-#if defined(__GLIBC__) || defined(__UCLIBC__) && defined(__UCLIBC_HAS_FENV__)
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_FENV__)
 #include <fenv.h>
 #else
 #include "fenv.h"

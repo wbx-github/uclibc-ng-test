@@ -53,6 +53,7 @@
    An options vector should be terminated by an option with all fields zero. */
 
 #include <stdlib.h>
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 #include <argp.h>
 
 const char *argp_program_version =
@@ -129,8 +130,11 @@ parse_opt (int key, char *arg, struct argp_state *state)
 /* Our argp parser.  */
 static struct argp argp = { options, parse_opt, args_doc, doc };
 
+#endif
+
 int main (int argc, char **argv)
 {
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
   struct arguments arguments;
 
   /* Default values.  */
@@ -150,4 +154,7 @@ int main (int argc, char **argv)
          arguments.silent ? "yes" : "no");
 
   exit (0);
+#else
+  return 23;
+#endif
 }

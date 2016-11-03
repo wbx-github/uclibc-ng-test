@@ -16,6 +16,7 @@
    License along with the GNU C Library; see the file COPYING.LIB.  If
    not, see <http://www.gnu.org/licenses/>.  */
 
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 #include <argp.h>
 
 static const struct argp_option opt1[] =
@@ -87,12 +88,17 @@ static struct argp argp1 =
     opt1, NULL, "args doc1", "doc1", children1, NULL, NULL
   };
 
+#endif
 
 static int
 do_test (void)
 {
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
   argp_help (&argp1, stdout, ARGP_HELP_LONG, (char *) "tst-argp2");
   return 0;
+#else
+  return 23;
+#endif
 }
 
 

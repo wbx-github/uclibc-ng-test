@@ -20,6 +20,7 @@
    parsers for various tasks).  */
 
 #include <stdlib.h>
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 #include <argp.h>
 
 const char *argp_program_version =
@@ -37,9 +38,14 @@ static char doc[] =
    used in the output for @samp{--help}, and the @samp{--version}
    option will print out @code{argp_program_version}.  */
 static struct argp argp = { 0, 0, 0, doc };
+#endif
 
 int main (int argc, char **argv)
 {
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
   argp_parse (&argp, argc, argv, 0, 0, 0);
   exit (0);
+#else
+  return 23;
+#endif
 }

@@ -16,10 +16,8 @@
    License along with the GNU C Library; see the file COPYING.LIB.  If
    not, see <http://www.gnu.org/licenses/>.  */
 
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 #include <argp.h>
-
-
-
 
 #define OPT_TO_THREAD          300
 #define OPT_TO_PROCESS         301
@@ -90,11 +88,12 @@ static struct argp argp =
 {
   test_options, parse_opt
 };
-
+#endif
 
 static int
 do_test (void)
 {
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
   int argc = 2;
   char *argv[3] = { (char *) "tst-argp1", (char *) "--help", NULL };
   int remaining;
@@ -103,15 +102,20 @@ do_test (void)
   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
   return 0;
+#else
+  return 23;
+#endif
 }
 
 
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 /* Handle program arguments.  */
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
 {
   return ARGP_ERR_UNKNOWN;
 }
+#endif
 
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"

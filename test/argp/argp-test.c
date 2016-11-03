@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 #include <argp.h>
 
 const char *argp_program_version = "argp-test 1.0";
@@ -195,14 +196,19 @@ static struct argp_child argp_children[] = { { &sub_argp }, { 0 } };
 static struct argp argp = {
   options, parse_opt, args_doc, doc, argp_children, help_filter
 };
+#endif
 
 int
 main (int argc, char **argv)
 {
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
   struct params params;
   params.foonly = 0;
   params.foonly_default = random ();
   argp_parse (&argp, argc, argv, 0, 0, &params);
   printf ("After parsing: foonly = %x\n", params.foonly);
   return 0;
+#else
+  return 23;
+#endif
 }

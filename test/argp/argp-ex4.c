@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 #include <error.h>
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 #include <argp.h>
 
 const char *argp_program_version =
@@ -130,9 +131,11 @@ parse_opt (int key, char *arg, struct argp_state *state)
 
 /* Our argp parser.  */
 static struct argp argp = { options, parse_opt, args_doc, doc };
+#endif
 
 int main (int argc, char **argv)
 {
+#if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
   int i, j;
   struct arguments arguments;
 
@@ -164,4 +167,7 @@ int main (int argc, char **argv)
     }
 
   exit (0);
+#else
+  return 23;
+#endif
 }
