@@ -44,6 +44,10 @@
 #include <tls-macros-metag.h>
 #endif
 
+#ifdef __microblaze__
+#include <tls-macros-microblaze.h>
+#endif
+
 #ifdef __mips__
 #include <tls-macros-mips.h>
 #endif
