@@ -152,6 +152,7 @@ main (int argc, char *argv[])
         }
 
       /* rawmemchr test */
+#if defined(__GLIBC__) || defined(__UCLIBC__)
       for (outer = size - 1; outer >= MAX (0, size - 128); --outer)
         {
 	  for (middle = MAX (outer, size - 64); middle < size; ++middle)
@@ -171,6 +172,7 @@ main (int argc, char *argv[])
 	      adr[middle] = 'T';
 	    }
         }
+#endif
 
       /* strcpy test */
       for (outer = size - 1; outer >= MAX (0, size - 128); --outer)

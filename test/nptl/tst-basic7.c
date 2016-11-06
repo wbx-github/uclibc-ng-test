@@ -32,10 +32,10 @@ use_up_memory (void)
   setrlimit (RLIMIT_AS, &rl);
 
   char *c;
-  int PAGESIZE = getpagesize ();
+  int pagesize = getpagesize ();
   while (1)
     {
-      c = mmap (NULL, PAGESIZE, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
+      c = mmap (NULL, pagesize, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
       if (c == MAP_FAILED)
 	break;
     }

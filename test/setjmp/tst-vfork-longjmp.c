@@ -49,11 +49,6 @@ static int check_sig_mask(void)
 			_exit(1);
 		}
 		ret = memcmp(&orig_mask, &child_mask, sizeof(orig_mask));
-		if (verbose) {
-			printf("sigmsk: %08lx%08lx ", child_mask.__val[1], child_mask.__val[0]);
-			printf("sigmsk: %08lx%08lx ", orig_mask.__val[1], orig_mask.__val[0]);
-			printf("%i\n", ret);
-		}
 		_exit(ret);
 	} else if (child == 1)
 		return 1;

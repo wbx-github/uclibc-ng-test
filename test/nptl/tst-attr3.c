@@ -18,12 +18,17 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 #include <error.h>
+#else
+#include "../error.h"
+#endif
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
 
 static void *
 tf (void *arg)
@@ -164,6 +169,7 @@ tf (void *arg)
 	}
     }
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   cpu_set_t c1, c2;
   err = pthread_getaffinity_np (pthread_self (), sizeof (c1), &c1);
   if (err == 0)
@@ -180,6 +186,7 @@ tf (void *arg)
 	  result = tf;
 	}
     }
+#endif
 
   err = pthread_attr_destroy (&a);
   if (err)
@@ -216,12 +223,14 @@ do_test (void)
       result = 1;
     }
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   err = pthread_attr_getaffinity_np (&a, sizeof (c1), &c1);
   if (err && err != ENOSYS)
     {
       error (0, err, "pthread_attr_getaffinity_np failed");
       result = 1;
     }
+#endif
 
   err = pthread_attr_destroy (&a);
   if (err)
@@ -310,6 +319,7 @@ do_test (void)
       result = 1;
     }
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   err = pthread_getaffinity_np (pthread_self (), sizeof (c1), &c1);
   if (err == 0)
     {
@@ -325,6 +335,7 @@ do_test (void)
 	  result = 1;
 	}
     }
+#endif
 
   err = pthread_attr_destroy (&a);
   if (err)

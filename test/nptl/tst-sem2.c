@@ -21,6 +21,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
 
 
 static int

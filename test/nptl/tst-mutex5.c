@@ -32,6 +32,7 @@
 static int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   pthread_mutex_t m;
   struct timespec ts;
   struct timeval tv;
@@ -178,6 +179,9 @@ do_test (void)
     }
 
   return 0;
+#else
+  return 23;
+#endif
 }
 
 #define TIMEOUT 4

@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 
 #ifndef INIT
 # define INIT PTHREAD_MUTEX_INITIALIZER
@@ -59,11 +60,12 @@ tf (void *arg)
 
   return NULL;
 }
-
+#endif
 
 static int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   pthread_attr_t at;
   pthread_t th[N];
   int cnt;
@@ -113,6 +115,9 @@ do_test (void)
       }
 
   return 0;
+#else
+  return 23;
+#endif
 }
 
 #define TIMEOUT 60

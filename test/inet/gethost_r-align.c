@@ -27,9 +27,11 @@ int main(int argc, char *argv[])
 
 		printf("Testing misalignment of %2zi bytes: ", i);
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 		memset(&hent, 0x00, sizeof(hent));
 		ret = gethostent_r(&hent, buf + i, sizeof(buf) - i, &hentres, &herr);
 		printf("%sgethostent_r() ", (ret ? "!!!" : ""));
+#endif
 
 		memset(&hent, 0x00, sizeof(hent));
 		ret = gethostbyname_r("localhost", &hent, buf + i, sizeof(buf) - i, &hentres, &herr);

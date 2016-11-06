@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
+#include "../test-skeleton.h"
 
 /* Must be exported.  */
 int val;

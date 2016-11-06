@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
+#include "../test-skeleton.h"
 
 static pid_t pid;
 

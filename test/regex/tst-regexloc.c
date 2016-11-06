@@ -25,7 +25,7 @@ main (int argc, char *argv[])
 {
 /* If uclibc has extended locale, or if it's a host build
  * (assuming host libc always has locale): */
-#if defined __UCLIBC_HAS_XLOCALE__ || !defined __UCLIBC__
+#if defined __UCLIBC_HAS_XLOCALE__ || (defined(__GLIBC__) && !defined __UCLIBC__)
   regex_t re;
   regmatch_t mat[1];
   int exitcode = 1;
@@ -47,7 +47,6 @@ main (int argc, char *argv[])
 
   return exitcode;
 #else
-  puts("Test requires locale; skipping");
-  return 0;
+  return 23;
 #endif
 }

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 /* LinuxThreads pthread_cleanup_{push,pop} helpers.  */
 extern void _pthread_cleanup_push (struct _pthread_cleanup_buffer *__buffer,
                                    void (*__routine) (void *),
@@ -120,11 +121,12 @@ tf (void *a)
 
   return NULL;
 }
-
+#endif
 
 int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   int result = 0;
 
   if (pipe (fds) != 0)
@@ -191,6 +193,9 @@ do_test (void)
     }
 
   return result;
+#else
+  return 23;
+#endif
 }
 
 #define TEST_FUNCTION do_test ()

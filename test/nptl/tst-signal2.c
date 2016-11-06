@@ -25,6 +25,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <string.h>
+#include "../test-skeleton.h"
 
 
 static sigset_t ss;

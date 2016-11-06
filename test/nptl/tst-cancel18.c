@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-
+#include "../test-skeleton.h"
 
 static pthread_barrier_t b;
 

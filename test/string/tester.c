@@ -1554,7 +1554,9 @@ main (void)
   test_strchrnul ();
 
   /* rawmemchr.  */
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   test_rawmemchr ();
+#endif
 
   /* index - just like strchr.  */
   test_index ();

@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
 
 #define THE_SIG SIGUSR1
 

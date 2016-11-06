@@ -32,6 +32,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "tst-mqueue.h"
+#include "../test-skeleton.h"
 
 #if _POSIX_THREADS
 # include <pthread.h>

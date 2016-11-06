@@ -8,6 +8,7 @@
 
 int main(int argc, char **argv)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
     int r;
     struct __res_state state;
 
@@ -40,5 +41,8 @@ int main(int argc, char **argv)
 	assert (state._u._ext.nscount == 0);
 
     return 0;
+#else
+    return 23;
+#endif
 }
 

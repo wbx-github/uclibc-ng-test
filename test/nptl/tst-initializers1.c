@@ -18,6 +18,7 @@
 
 #include <pthread.h>
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 pthread_mutex_t mtx_normal = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mtx_recursive = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 pthread_mutex_t mtx_errorchk = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
@@ -26,10 +27,12 @@ pthread_rwlock_t rwl_normal = PTHREAD_RWLOCK_INITIALIZER;
 pthread_rwlock_t rwl_writer
   = PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+#endif
 
 int
 main (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   if (mtx_normal.__data.__kind != PTHREAD_MUTEX_TIMED_NP)
     return 1;
   if (mtx_recursive.__data.__kind != PTHREAD_MUTEX_RECURSIVE_NP)
@@ -44,4 +47,7 @@ main (void)
       != PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP)
     return 1;
   return 0;
+#else
+  return 23;
+#endif
 }

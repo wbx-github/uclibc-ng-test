@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 extern void _pthread_cleanup_push (struct _pthread_cleanup_buffer *__buffer,
                                    void (*__routine) (void *),
                                    void *__arg);
@@ -118,3 +119,4 @@ fn9 (void)
 
   _pthread_cleanup_pop (&b, 1);
 }
+#endif

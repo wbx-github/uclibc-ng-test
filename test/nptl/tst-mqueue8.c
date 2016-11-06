@@ -17,11 +17,14 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <fcntl.h>
 #include <mqueue.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
+
 #if _POSIX_THREADS
 # include <pthread.h>
 

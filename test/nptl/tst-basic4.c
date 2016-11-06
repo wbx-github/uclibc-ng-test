@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
+#include "../test-skeleton.h"
 
 static void
 final_test (void)

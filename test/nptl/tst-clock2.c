@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
 
 
 #if defined _POSIX_THREAD_CPUTIME && _POSIX_THREAD_CPUTIME >= 0

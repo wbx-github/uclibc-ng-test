@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "../test-skeleton.h"
 
 #define NKEYS 100
 static pthread_key_t keys[NKEYS];

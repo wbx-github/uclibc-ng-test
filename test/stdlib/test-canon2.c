@@ -69,6 +69,7 @@ do_prepare (int argc, char *argv[])
 int
 do_test (int argc, char *argv[])
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   char *canon;
 
   printf ("create symlinks from %s to %s and vice versa\n", name1, name2);
@@ -83,4 +84,7 @@ do_test (int argc, char *argv[])
   canon = canonicalize_file_name (name1);
 
   return canon != NULL || errno != ELOOP;
+#else
+  return 23;
+#endif
 }

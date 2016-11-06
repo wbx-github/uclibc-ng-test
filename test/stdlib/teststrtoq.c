@@ -66,6 +66,7 @@ int n_tests=sizeof(strings)/sizeof(strings[0]);
 void do_test(int base);
 void do_test(int base)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 	int i;
 	quad_t n;
 	char *endptr;
@@ -75,10 +76,12 @@ void do_test(int base)
 		printf("strtoq(\"%s\",%d) len=%lu res=%qd\n",
 			strings[i],base,(unsigned long)(endptr-strings[i]),n);
 	}
+#endif
 }
 
 int main(int argc,char *argv[])
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 	do_test(0);
 	do_test(8);
 	do_test(10);
@@ -86,4 +89,7 @@ int main(int argc,char *argv[])
 	do_test(36);
 
 	return 0;
+#else
+	return 23;
+#endif
 }

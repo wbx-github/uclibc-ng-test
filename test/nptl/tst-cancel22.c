@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
 
 pthread_barrier_t b;
 int seen;

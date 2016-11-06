@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "../test-skeleton.h"
 
 /* This test relies on non-POSIX functionality since the child
    processes call write and getpid.  */

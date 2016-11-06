@@ -23,6 +23,8 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
+
 #if _POSIX_THREADS
 # include <pthread.h>
 

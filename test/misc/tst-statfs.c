@@ -19,13 +19,6 @@ main(int argc, char* argv[])
 		++ret;
 		printf("statfs %s:\n\tblocks=%lld\n\tblkfree=%lld\n\tbsize=%d\n",
 			argv[i], s.f_blocks, s.f_bfree, s.f_bsize);
-#ifdef _STATFS_F_FRSIZE
-		printf("\tfrsize=%lld\n", s.f_frsize);
-#elif defined __mips__
-		printf("\tfrsize=mips, unsupported?\n");
-#else
-# error no _STATFS_F_FRSIZE
-#endif
 	}
 	exit(ret ? EXIT_SUCCESS : EXIT_FAILURE);
 }

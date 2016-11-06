@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
 
 
 /* Number of different signalss to use.  Also is the number of

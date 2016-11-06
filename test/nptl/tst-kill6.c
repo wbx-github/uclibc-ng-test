@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include "../test-skeleton.h"
 
 static pthread_t receiver;
 static sem_t sem;

@@ -66,6 +66,7 @@ static efuncp func_table[] =
 int
 main ( void )
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 	int i = 0;
 	unsigned long count = 0;
 	int numfuncs = sizeof(func_table)/sizeof(efuncp);
@@ -78,5 +79,8 @@ main ( void )
 	}
 	printf("%lu functions registered with on_exit.\n", count);
 	exit(count);
+#else
+	return 23;
+#endif
 }
 

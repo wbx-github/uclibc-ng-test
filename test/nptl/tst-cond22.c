@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 static pthread_barrier_t b;
 static pthread_cond_t c = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
@@ -49,11 +49,12 @@ tf (void *arg)
     }
   return NULL;
 }
-
+#endif
 
 static int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   int status = 0;
 
   if (pthread_barrier_init (&b, NULL, 2) != 0)
@@ -154,6 +155,9 @@ do_test (void)
 	  c.__data.__nwaiters, c.__data.__broadcast_seq);
 
   return status;
+#else
+  return 23;
+#endif
 }
 
 #define TEST_FUNCTION do_test ()

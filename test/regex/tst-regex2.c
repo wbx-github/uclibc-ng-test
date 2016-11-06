@@ -15,6 +15,7 @@
 static int
 do_test(void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 	static const char *pat[] = {
 		".?.?.?.?.?.?.?Log\\.13",
 		"(.?)(.?)(.?)(.?)(.?)(.?)(.?)Log\\.13",
@@ -243,6 +244,9 @@ do_test(void)
 		}
 	}
 	return exitcode;
+#else
+	return 23;
+#endif
 }
 
 #define TIMEOUT 100

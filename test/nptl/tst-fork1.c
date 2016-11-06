@@ -23,6 +23,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "../test-skeleton.h"
 
 static void *
 thread_function (void * arg)

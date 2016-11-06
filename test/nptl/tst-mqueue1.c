@@ -27,6 +27,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "tst-mqueue.h"
+#include "../test-skeleton.h"
 
 static int
 intcmp (const void *a, const void *b)

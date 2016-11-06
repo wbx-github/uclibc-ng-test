@@ -25,7 +25,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
-
+#include "../test-skeleton.h"
 
 static int
 do_test (void)

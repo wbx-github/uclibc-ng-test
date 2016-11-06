@@ -22,7 +22,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/time.h>
-
+#include "../test-skeleton.h"
 
 static int
 do_test (void)

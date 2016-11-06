@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <time.h>
-
+#include "../test-skeleton.h"
 
 /* Test that clock_nanosleep() does sleep.  */
 static int

@@ -13,7 +13,7 @@
 int main(int argc, char **argv)
 {
 	int i=0;
-	char** index=__environ;
+	char** index=environ;
 
 #ifdef __powerpc__
 	{

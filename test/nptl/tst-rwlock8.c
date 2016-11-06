@@ -24,7 +24,7 @@
 #include <time.h>
 #include <unistd.h>
 
-
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 #define NWRITERS 15
 #define WRITETRIES 10
 #define NREADERS 15
@@ -109,11 +109,12 @@ reader_thread (void *nr)
 
   return NULL;
 }
-
+#endif
 
 static int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   pthread_t thwr[NWRITERS];
   pthread_t thrd[NREADERS];
   int n;
@@ -156,6 +157,9 @@ do_test (void)
       }
 
   return 0;
+#else
+  return 23;
+#endif
 }
 
 #define TIMEOUT 30

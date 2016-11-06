@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "../test-skeleton.h"
 
 int raise_fail;
 

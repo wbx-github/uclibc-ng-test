@@ -35,6 +35,10 @@ ifeq ($(NO_LOCALE),1)
 DIRS := $(filter-out locale,$(DIRS))
 endif
 
+ifeq ($(NO_MATH),1)
+DIRS := $(filter-out math,$(DIRS))
+endif
+
 test check all: run
 
 run: subdirs_run

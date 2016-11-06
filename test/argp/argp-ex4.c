@@ -24,8 +24,8 @@
    current locale.  */
 
 #include <stdlib.h>
-#include <error.h>
 #if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
+#include <error.h>
 #include <argp.h>
 
 const char *argp_program_version =

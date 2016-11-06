@@ -34,6 +34,7 @@ remove_sem (int status, void *arg)
 int
 main (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   sem_t *s;
   sem_t *s2;
   sem_t *s3;
@@ -105,4 +106,7 @@ main (void)
     }
 
   return 0;
+#else
+  return 23;
+#endif
 }

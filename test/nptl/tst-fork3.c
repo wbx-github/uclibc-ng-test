@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "../test-skeleton.h"
 
 
 static pid_t initial_pid;

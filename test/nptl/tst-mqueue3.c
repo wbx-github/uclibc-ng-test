@@ -18,6 +18,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <fcntl.h>
 #include <mqueue.h>
 #include <signal.h>
 #include <stddef.h>
@@ -28,6 +29,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "../test-skeleton.h"
 
 #if _POSIX_THREADS
 # include <pthread.h>

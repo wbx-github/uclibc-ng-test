@@ -26,8 +26,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include "../test-skeleton.h"
 
-int gettimeofday(struct timeval *tv, struct timezone *tz);
+//int gettimeofday(struct timeval *tv, struct timezone *tz);
 
 
 static int

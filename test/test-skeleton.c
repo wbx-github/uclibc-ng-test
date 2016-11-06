@@ -32,7 +32,9 @@
 #include <sys/param.h>
 #include <time.h>
 #include <features.h>
+#include "test-skeleton.h"
 
+	 
 /* The test function is normally called `do_test' and it is called
    with argc and argv as the arguments.  We nevertheless provide the
    possibility to overwrite this name.  */

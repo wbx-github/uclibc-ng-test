@@ -37,8 +37,13 @@
 #include <sys/uio.h>
 #include <sys/un.h>
 #include <sys/wait.h>
+#include "../test-skeleton.h"
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 #define SIGCANCEL   __SIGRTMIN
+#else
+#define SIGCANCEL   SIGRTMIN
+#endif
 
 
 /* Since STREAMS are not supported in the standard Linux kernel and

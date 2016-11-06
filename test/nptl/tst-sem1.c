@@ -20,7 +20,7 @@
 #include <semaphore.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include "../test-skeleton.h"
 
 static int
 do_test (void)

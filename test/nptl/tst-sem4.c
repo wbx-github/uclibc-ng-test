@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include "../test-skeleton.h"
 
 static void
 remove_sem (int status, void *arg)
@@ -34,6 +34,7 @@ remove_sem (int status, void *arg)
 int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   sem_t *s;
   sem_t *s2;
   pid_t pid;
@@ -143,6 +144,9 @@ do_test (void)
     }
 
   return 0;
+#else
+  return 23;
+#endif
 }
 
 #define TEST_FUNCTION do_test ()

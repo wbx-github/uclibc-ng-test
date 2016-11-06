@@ -21,10 +21,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/file.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
-
+#include "../test-skeleton.h"
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;

@@ -23,7 +23,7 @@
 #include <string.h>
 #include <sys/time.h>
 
-
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 static int kind[] =
   {
     PTHREAD_RWLOCK_PREFER_READER_NP,
@@ -95,11 +95,12 @@ tf (void *arg)
 
   return NULL;
 }
-
+#endif
 
 static int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   size_t cnt;
   for (cnt = 0; cnt < sizeof (kind) / sizeof (kind[0]); ++cnt)
     {
@@ -172,6 +173,9 @@ do_test (void)
     }
 
   return 0;
+#else
+  return 23;
+#endif
 }
 
 #define TEST_FUNCTION do_test ()

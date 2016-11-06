@@ -24,6 +24,7 @@
 #include <sys/time.h>
 
 
+#if defined(__GLIBC__) || defined(__UCLIBC__)
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t mut = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
 
@@ -142,11 +143,12 @@ tf2 (void *p)
 
   return NULL;
 }
-
+#endif
 
 static int
 do_test (void)
 {
+#if defined(__GLIBC__) || defined(__UCLIBC__)
   pthread_t th;
   int err;
 
@@ -269,6 +271,9 @@ do_test (void)
   puts ("done");
 
   return 0;
+#else
+  return 23;
+#endif
 }
 
 
