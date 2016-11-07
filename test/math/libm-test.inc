@@ -511,7 +511,7 @@ fpstack_test (const char *test_name)
   static int old_stack;
   int sw;
 
-  asm ("fnstsw" : "=a" (sw));
+  __asm__ ("fnstsw" : "=a" (sw));
   sw >>= 11;
   sw &= 7;
 
@@ -8651,7 +8651,7 @@ isunordered_test (void)
   ALL_RM_TEST (isunordered, 1, isunordered_test_data, RUN_TEST_LOOP_ff_i_tg, END);
 }
 
-#if defined __DO_XSI_MATH__ && !(defined TEST_LDOUBLE || defined TEST_FLOAT)
+#if defined(__GLIBC__) && !defined(__UCLIBC__)
 static const struct test_f_f_data j0_test_data[] =
   {
     /* j0 is the Bessel function of the first kind of order 0 */
@@ -10402,7 +10402,7 @@ nextafter_test (void)
   ALL_RM_TEST (nextafter, 1, nextafter_test_data, RUN_TEST_LOOP_ff_f, END);
 }
 
-#ifndef __UCLIBC__
+#if 0
 static const struct test_f_f_data nextup_test_data[] =
   {
     TEST_f_f (nextup, minus_zero, min_subnorm_value, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
@@ -12277,7 +12277,7 @@ trunc_test (void)
   ALL_RM_TEST (trunc, 1, trunc_test_data, RUN_TEST_LOOP_f_f, END);
 }
 
-#if defined __DO_XSI_MATH__ && !(defined TEST_LDOUBLE || defined TEST_FLOAT)
+#if defined(__GLIBC__) && !defined(__UCLIBC__)
 static const struct test_f_f_data y0_test_data[] =
   {
     /* y0 is the Bessel function of the second kind of order 0 */
@@ -12717,7 +12717,7 @@ main (int argc, char **argv)
 
   /* Manipulation functions:  */
   copysign_test ();
-#ifndef __UCLIBC__
+#if 0
   nextup_test();
   nextdown_test();
 #endif

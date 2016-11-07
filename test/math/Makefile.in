@@ -12,6 +12,13 @@ TESTS_DISABLED += test-ldouble test-ldouble-finite test-ildoubl compile_test c99
 # disable tgmath tests, not implemented
 TESTS_DISABLED += test-tgmath test-tgmath2 test-tgmath-int test-tgmath-ret
 
+CFLAGS_test-double = -std=c11
+CFLAGS_test-double-finite = -std=c11
+CFLAGS_test-float = -std=c11
+CFLAGS_test-float-finite = -std=c11
+CFLAGS_test-idouble = -std=c11
+CFLAGS_test-ifloat = -std=c11
+
 CFLAGS_test-signgam-finite = -ffinite-math-only
 CFLAGS_test-signgam-finite-c99 = -ffinite-math-only -std=c99
 CFLAGS_test-signgam-finite-c11 = -ffinite-math-only -std=c11
