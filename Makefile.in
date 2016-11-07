@@ -19,3 +19,7 @@ test_compile: $(LOCAL_INSTALL_PATH)
 test_gen: $(LOCAL_INSTALL_PATH)
 	$(Q)$(MAKE) -C test gen \
 		$(if $(O),top_builddir=$(O)/)
+
+install:
+	mkdir -p $(DESTDIR)
+	tar --exclude='*.[och]' -cvf - test/ | tar -xvf - -C $(DESTDIR)
