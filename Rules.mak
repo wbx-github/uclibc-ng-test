@@ -65,6 +65,8 @@ TAR        = tar
 SED        = sed
 AWK        = awk
 
+DESTDIR    ?= /usr/lib/uclibc-ng-test
+
 STRIP_FLAGS ?= -x -R .note -R .comment
 
 # Select the compiler needed to build binaries for your development system
