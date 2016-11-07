@@ -38,6 +38,8 @@ CFLAGS_tst-tlsmod17b.so := -fPIC -DSHARED -shared
 CFLAGS_tst-tlsmod18a.so := -fPIC -DSHARED -shared
 CFLAGS_tst-tlsmod-at-ctor.so := -fPIC -DSHARED -shared
 
+CFLAGS_tst-tls18 += -std=c99
+
 LDFLAGS_tst-tlsmod1.so := -shared -static-libgcc -L$(top_builddir)lib
 LDFLAGS_tst-tlsmod2.so := -shared -static-libgcc -L$(top_builddir)lib
 LDFLAGS_tst-tlsmod3.so := -shared -static-libgcc -L$(top_builddir)lib	\

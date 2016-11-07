@@ -120,6 +120,15 @@ CFLAGS_tst-initializers1-c89 = $(CFLAGS-tst-initializers1) -std=c89
 CFLAGS_tst-initializers1-c99 = $(CFLAGS-tst-initializers1) -std=c99
 CFLAGS_tst-initializers1-gnu89 = $(CFLAGS-tst-initializers1) -std=gnu89
 CFLAGS_tst-initializers1-gnu99 = $(CFLAGS-tst-initializers1) -std=gnu99
+CFLAGS_tst-cpuclock1 += -std=c99
+CFLAGS_tst-cpuclock2 += -std=c99
+CFLAGS_tst-cputimer1 += -std=c99
+CFLAGS_tst-cputimer2 += -std=c99
+CFLAGS_tst-cputimer3 += -std=c99
+CFLAGS_tst-mqueue1 += -std=c99
+CFLAGS_tst-mqueue7 += -std=c99
+CFLAGS_tst-mqueue8 += -std=c99
+CFLAGS_tst-tsd6 += -std=c99
 
 EXTRA_LDFLAGS = $(if $(findstring -lpthread,$(LDFLAGS_$@)),,-lpthread)
 
