@@ -65,7 +65,7 @@ TAR        = tar
 SED        = sed
 AWK        = awk
 
-DESTDIR    ?= /usr/lib/uclibc-ng-test
+DESTDIR    ?=
 
 STRIP_FLAGS ?= -x -R .note -R .comment
 
