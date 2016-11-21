@@ -12,7 +12,7 @@ ifeq ($(UCLIBC_LINUX_SPECIFIC),)
 TESTS_DISABLED += tst-fallocate
 endif
 
-ifeq ($(TARGET_avr32),y)
+ifeq ($(TARGET_ARCH),avr32)
 TESTS_DISABLED += tst-fallocate tst-posix_fallocate tst-fallocate64
 endif
 

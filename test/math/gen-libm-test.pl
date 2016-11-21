@@ -97,7 +97,7 @@ $ulps_file = $opt_u if ($opt_u);
 $output_dir = $opt_o if ($opt_o);
 
 $input = "libm-test.inc";
-$auto_input = "${srcdir}auto-libm-test-out";
+$auto_input = "${srcdir}auto-libm-test-out.m";
 $output = "${output_dir}libm-test.c";
 
 &parse_ulps ($ulps_file);

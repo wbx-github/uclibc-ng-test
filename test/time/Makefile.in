@@ -4,7 +4,7 @@
 TESTS_DISABLED := bug-asctime bug-asctime_r time tst-mktime2 tst-posixtz \
 	tst-strftime tst-strptime tst-timezone
 
-ifeq ($(TARGET_avr32),y)
+ifeq ($(TARGET_ARCH),avr32)
 TESTS_DISABLED += tst-timerfd
 endif
 

@@ -22,4 +22,4 @@ test_gen: $(LOCAL_INSTALL_PATH)
 
 install:
 	mkdir -p $(DESTDIR)/usr/lib/uclibc-ng-test
-	tar --exclude='*.[och]' -cvf - test/ | tar -xvf - -C $(DESTDIR)/usr/lib/uclibc-ng-test
+	tar --exclude='*.[ochm]' -cvf - test/ | tar -xvf - -C $(DESTDIR)/usr/lib/uclibc-ng-test

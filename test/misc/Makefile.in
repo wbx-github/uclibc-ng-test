@@ -3,7 +3,7 @@
 
 TESTS_DISABLED := outb tst-fnmatch bug-glob1 tst-gnuglob
 
-ifeq ($(TARGET_avr32),y)
+ifeq ($(TARGET_ARCH),avr32)
 TESTS_DISABLED += tst-inotify
 endif
 
