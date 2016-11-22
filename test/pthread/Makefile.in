@@ -3,6 +3,10 @@
 
 TESTS_DISABLED += cancellation-points
 
+ifeq ($(TARGET_ARCH),sh)
+TESTS_DISABLED += ex2 ex7
+endif
+
 EXTRA_LDFLAGS := -lpthread
 
 LDFLAGS_cancellation-points := -lrt
