@@ -23,7 +23,7 @@ TARGET_ARCH:=$(shell $(CC) -dumpmachine | sed -e s'/-.*//' \
 	-e 's/m68k.*/m68k/' \
 	-e 's/parisc.*/hppa/' \
 	-e 's/ppc/powerpc/g' \
-	-e 's/sh[234]/sh/' \
+	-e 's/sh[234].*/sh/' \
 	-e 's/microblaze.*/microblaze/' \
 	-e 's/mips.*/mips/' \
 	-e 's/cris.*/cris/' \
