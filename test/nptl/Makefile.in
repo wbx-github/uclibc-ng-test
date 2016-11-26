@@ -4,6 +4,12 @@
 ifeq ($(TARGET_ARCH),metag)
 TESTS_DISABLED := tst-cleanup0 tst-cleanupx0
 endif
+
+# qemu crash
+ifeq ($(TARGET_ARCH),microblaze)
+TESTS_DISABLED := tst-tls2
+endif
+
 # deadlock
 ifeq ($(TARGET_ARCH),sh)
 TESTS_DISABLED := tst-cond1 tst-cond4 tst-cond6 tst-cond7 tst-cond10 \
