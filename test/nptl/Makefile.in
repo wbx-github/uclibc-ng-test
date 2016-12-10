@@ -101,6 +101,7 @@ LDFLAGS_tst-fini1mod.so = -Wl,-soname=tst-fini1mod.so
 LDFLAGS_tst-unload = -ldl
 LDFLAGS_tst-cancel5 := -lpthread
 LDFLAGS_tst-cancel18 := -lrt
+LDFLAGS_tst-cancelx18 := -lrt
 LDFLAGS_tst-cancel23 := -lc -lpthread
 LDFLAGS_tst-vfork1x := -lc -lpthread
 LDFLAGS_tst-vfork2x := -lc -lpthread
