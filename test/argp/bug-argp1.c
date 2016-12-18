@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #if (defined(__GLIBC__) && !defined(__UCLIBC__)) || defined(__UCLIBC_HAS_ARGP__)
 #include <argp.h>
 
