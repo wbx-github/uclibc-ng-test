@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(__GLIBC__) || defined(__UCLIBC__)
+#if defined(__UCLIBC__)
 static pthread_barrier_t b;
 static pthread_cond_t c = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
@@ -54,7 +54,7 @@ tf (void *arg)
 static int
 do_test (void)
 {
-#if defined(__GLIBC__) || defined(__UCLIBC__)
+#if defined(__UCLIBC__)
   int status = 0;
 
   if (pthread_barrier_init (&b, NULL, 2) != 0)
