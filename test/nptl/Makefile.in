@@ -14,8 +14,8 @@ endif
 ifeq ($(TARGET_ARCH),sh)
 TESTS_DISABLED := tst-cond1 tst-cond4 tst-cond6 tst-cond7 tst-cond10 \
 	tst-cond13 tst-cond14 tst-cond15 tst-cond18 tst-cond20 \
-	tst-cond21 tst-cond22 tst-cputimer1 tst-cputimer3 tst-mutex8 \
-	tst-timer4 tst-timer5
+	tst-cond21 tst-cond22 tst-cputimer1 tst-cputimer2 tst-cputimer3 \
+	tst-mutex8 tst-timer4 tst-timer5
 endif
 
 TESTS := tst-align tst-align2 tst-atfork1 tst-attr1 tst-attr2 tst-attr3	\
