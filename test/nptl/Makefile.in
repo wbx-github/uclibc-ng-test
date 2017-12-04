@@ -16,11 +16,6 @@ TESTS_DISABLED := tst-tls2
 endif
 
 # deadlock
-ifeq ($(TARGET_ARCH),or1k)
-TESTS_DISABLED := tst-sem11 tst-fork1
-endif
-
-# deadlock
 ifeq ($(TARGET_ARCH),sh)
 TESTS_DISABLED := tst-cond1 tst-cond4 tst-cond6 tst-cond7 tst-cond10 \
 	tst-cond13 tst-cond14 tst-cond15 tst-cond18 tst-cond20 \
