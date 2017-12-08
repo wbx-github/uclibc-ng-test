@@ -32,11 +32,7 @@ tf (void *arg)
      write blocks.  */
   char buf[100000];
 
-  if (write (fd[1], buf, sizeof (buf)) == sizeof (buf))
-    {
-      puts ("write succeeded");
-      return (void *) 1l;
-    }
+  while (write (fd[1], buf, sizeof (buf)) > 0);
 
   return (void *) 42l;
 }
