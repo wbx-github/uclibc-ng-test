@@ -39,8 +39,6 @@ do_prepare (void)
     }
 }
 
-#if defined(preadv) && defined(pwritev)
-
 #define FAIL(str) \
   do { printf ("error: %s (line %d)\n", str, __LINE__); return 1; } while (0)
 
@@ -112,14 +110,9 @@ do_test_with_offset (off_t offset)
 
   return 0;
 }
-#endif
 
 static int
 do_test (void)
 {
-#if defined(preadv) && defined(pwritev)
   return do_test_with_offset (0);
-#else
-  return 23;
-#endif
 }
