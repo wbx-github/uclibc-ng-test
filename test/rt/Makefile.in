@@ -1,0 +1,7 @@
+# uClibc-ng realtime tests
+# Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+
+LDFLAGS_tst-shm := -lrt
+TESTS_DISABLED := tst-shm
+
+OPTS_tst-posix_spawn := ls

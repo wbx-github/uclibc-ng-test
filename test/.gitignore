@@ -51,7 +51,8 @@ inet/tst-network
 inet/tst-ntoa
 inet/tst-res
 inet/tst-sock-nonblock
-librt/shmtest
+rt/tst-shm
+rt/tst-posix_spawn
 locale/bug-iconv-trans
 locale/bug-usesetlocale
 locale/C
