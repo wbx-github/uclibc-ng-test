@@ -9,6 +9,7 @@
 
 int main()
 {
+#if defined SYS_preadv2 && defined SYS_pwritev2
 	char tmp[] = "/tmp/tst-preadv2-XXXXXX";
 	int fd;
 	struct iovec iov[2];
@@ -58,4 +59,7 @@ int main()
 	}
 
 	return 0;
+#else
+  return 23;
+#endif
 }

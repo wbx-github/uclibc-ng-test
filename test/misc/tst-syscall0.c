@@ -2,10 +2,16 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
+#ifndef SYS_getpid
+#define _SYS_call0 SYS_getxpid
+#else
+#define _SYS_call0 SYS_getpid
+#endif
+
 int main() {
 	int pid;
 
-	pid = syscall(SYS_getpid);
+	pid = syscall(_SYS_call0);
    	if (pid > 0) {
 		printf("syscall(SYS_getpid) says %d\n", pid);
      		return 0;
