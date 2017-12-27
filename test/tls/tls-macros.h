@@ -40,6 +40,10 @@
 #include <tls-macros-ia64.h>
 #endif
 
+#ifdef __m68k__
+#include <tls-macros-m68k.h>
+#endif
+
 #ifdef __metag__
 #include <tls-macros-metag.h>
 #endif
