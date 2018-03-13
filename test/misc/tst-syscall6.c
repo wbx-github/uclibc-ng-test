@@ -9,7 +9,7 @@
 
 int main()
 {
-#if defined SYS_preadv2 && defined SYS_pwritev2
+#if defined SYS_preadv2 && defined SYS_pwritev2 && defined RWF_HIPRI
 	char tmp[] = "/tmp/tst-preadv2-XXXXXX";
 	int fd;
 	struct iovec iov[2];
