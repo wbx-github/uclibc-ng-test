@@ -3,5 +3,3 @@
 
 RET_hello := 42
 RET_tiny  := 42
-
-TESTS_DISABLED += tst-atomic tst-atomic-long
