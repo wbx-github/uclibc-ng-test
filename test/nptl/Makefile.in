@@ -1,11 +1,6 @@
 # uClibc-ng NPTL tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
-# deadlock
-ifeq ($(TARGET_ARCH),arc)
-TESTS_DISABLED := tst-cond16
-endif
-
 ifeq ($(TARGET_ARCH),metag)
 TESTS_DISABLED := tst-cleanup0 tst-cleanupx0
 endif
