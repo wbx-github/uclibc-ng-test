@@ -56,7 +56,8 @@
    scalb, scalbn, scalbln, signbit, sin, sincos, sinh, sqrt, tan, tanh, tgamma, trunc,
    y0, y1, yn, significand
 
-   and for the following complex math functions:
+   tests for the following complex math functions are disabled because they are
+   not implemented:
    cabs, cacos, cacosh, carg, casin, casinh, catan, catanh,
    ccos, ccosh, cexp, cimag, clog, clog10, conj, cpow, cproj, creal,
    csin, csinh, csqrt, ctan, ctanh.
@@ -2819,11 +2820,14 @@ static const struct test_c_c_data cacos_test_data[] =
     TEST_c_c (cacos, -2, -3, 2.1414491111159960199416055713254211L, 1.9833870299165354323470769028940395L),
   };
 
+#if 0
 static void
 cacos_test (void)
 {
   ALL_RM_TEST (cacos, 0, cacos_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
+
 
 static const struct test_c_c_data cacosh_test_data[] =
   {
@@ -3501,11 +3505,13 @@ static const struct test_c_c_data cacosh_test_data[] =
     TEST_c_c (cacosh, -2, -3, 1.9833870299165354323470769028940395L, -2.1414491111159960199416055713254211L),
   };
 
+#if 0
 static void
 cacosh_test (void)
 {
   ALL_RM_TEST (cacosh, 0, cacosh_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_f_data carg_test_data[] =
@@ -4232,11 +4238,13 @@ static const struct test_c_c_data casin_test_data[] =
     TEST_c_c (casin, -2, -3, -0.57065278432109940071028387968566963L, -1.9833870299165354323470769028940395L),
   };
 
+#if 0
 static void
 casin_test (void)
 {
   ALL_RM_TEST (casin, 0, casin_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data casinh_test_data[] =
@@ -4922,11 +4930,13 @@ static const struct test_c_c_data casinh_test_data[] =
     TEST_c_c (casinh, -2, -3, -1.9686379257930962917886650952454982L, -0.96465850440760279204541105949953237L),
   };
 
+#if 0
 static void
 casinh_test (void)
 {
   ALL_RM_TEST (casinh, 0, casinh_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data catan_test_data[] =
@@ -5429,11 +5439,14 @@ static const struct test_c_c_data catan_test_data[] =
     TEST_c_c (catan, -2, -3, -1.4099210495965755225306193844604208L, -0.22907268296853876629588180294200276L),
   };
 
+#if 0
 static void
 catan_test (void)
 {
   ALL_RM_TEST (catan, 0, catan_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
+
 
 static const struct test_c_c_data catanh_test_data[] =
   {
@@ -5934,11 +5947,14 @@ static const struct test_c_c_data catanh_test_data[] =
     TEST_c_c (catanh, -2, -3, -0.14694666622552975204743278515471595L, -1.3389725222944935611241935759091443L),
   };
 
+#if 0
 static void
 catanh_test (void)
 {
   ALL_RM_TEST (catanh, 0, catanh_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
+
 
 static const struct test_f_f_data cbrt_test_data[] =
   {
@@ -6009,11 +6025,13 @@ static const struct test_c_c_data ccos_test_data[] =
     AUTO_TESTS_c_c (ccos),
   };
 
+#if 0
 static void
 ccos_test (void)
 {
   ALL_RM_TEST (ccos, 0, ccos_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data ccosh_test_data[] =
@@ -6066,11 +6084,13 @@ static const struct test_c_c_data ccosh_test_data[] =
     AUTO_TESTS_c_c (ccosh),
   };
 
+#if 0
 static void
 ccosh_test (void)
 {
   ALL_RM_TEST (ccosh, 0, ccosh_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_f_f_data ceil_test_data[] =
@@ -6289,11 +6309,14 @@ static const struct test_c_f_data cimag_test_data[] =
     TEST_c_f (cimag, 2.0, 3.0, 3.0, NO_INEXACT_EXCEPTION),
   };
 
+#if 0
 static void
 cimag_test (void)
 {
   ALL_RM_TEST (cimag, 1, cimag_test_data, RUN_TEST_LOOP_c_f, END);
 }
+#endif
+
 
 static const struct test_c_c_data clog_test_data[] =
   {
@@ -6349,11 +6372,13 @@ static const struct test_c_c_data clog_test_data[] =
     AUTO_TESTS_c_c (clog),
   };
 
+#if 0
 static void
 clog_test (void)
 {
   ALL_RM_TEST (clog, 0, clog_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data clog10_test_data[] =
@@ -6409,11 +6434,13 @@ static const struct test_c_c_data clog10_test_data[] =
     AUTO_TESTS_c_c (clog10),
   };
 
+#if 0
 static void
 clog10_test (void)
 {
   ALL_RM_TEST (clog10, 0, clog10_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data conj_test_data[] =
@@ -6430,11 +6457,13 @@ static const struct test_c_c_data conj_test_data[] =
     TEST_c_c (conj, 3.0, -4.0, 3.0, 4.0, NO_INEXACT_EXCEPTION),
   };
 
+#if 0
 static void
 conj_test (void)
 {
   ALL_RM_TEST (conj, 1, conj_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_ff_f_data copysign_test_data[] =
@@ -6572,11 +6601,13 @@ static const struct test_cc_c_data cpow_test_data[] =
     AUTO_TESTS_cc_c (cpow),
   };
 
+#if 0
 static void
 cpow_test (void)
 {
   ALL_RM_TEST (cpow, 0, cpow_test_data, RUN_TEST_LOOP_cc_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data cproj_test_data[] =
@@ -6637,11 +6668,13 @@ static const struct test_c_c_data cproj_test_data[] =
     TEST_c_c (cproj, 2.0, 3.0, 2.0, 3.0, NO_INEXACT_EXCEPTION),
   };
 
+#if 0
 static void
 cproj_test (void)
 {
   ALL_RM_TEST (cproj, 1, cproj_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_f_data creal_test_data[] =
@@ -6659,11 +6692,14 @@ static const struct test_c_f_data creal_test_data[] =
     TEST_c_f (creal, 2.0, 3.0, 2.0, NO_INEXACT_EXCEPTION),
   };
 
+#if 0
 static void
 creal_test (void)
 {
   ALL_RM_TEST (creal, 1, creal_test_data, RUN_TEST_LOOP_c_f, END);
 }
+#endif
+
 
 static const struct test_c_c_data csin_test_data[] =
   {
@@ -6718,11 +6754,13 @@ static const struct test_c_c_data csin_test_data[] =
     TEST_c_c (csin, min_value, min_subnorm_value, min_value, min_subnorm_value, UNDERFLOW_EXCEPTION),
   };
 
+#if 0
 static void
 csin_test (void)
 {
   ALL_RM_TEST (csin, 0, csin_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data csinh_test_data[] =
@@ -6778,11 +6816,13 @@ static const struct test_c_c_data csinh_test_data[] =
     TEST_c_c (csinh, min_value, min_subnorm_value, min_value, min_subnorm_value, UNDERFLOW_EXCEPTION),
   };
 
+#if 0
 static void
 csinh_test (void)
 {
   ALL_RM_TEST (csinh, 0, csinh_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data csqrt_test_data[] =
@@ -6829,11 +6869,14 @@ static const struct test_c_c_data csqrt_test_data[] =
     AUTO_TESTS_c_c (csqrt),
   };
 
+#if 0
 static void
 csqrt_test (void)
 {
   ALL_RM_TEST (csqrt, 0, csqrt_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
+
 
 static const struct test_c_c_data ctan_test_data[] =
   {
@@ -6939,11 +6982,13 @@ static const struct test_c_c_data ctan_test_data[] =
     AUTO_TESTS_c_c (ctan),
   };
 
+#if 0
 static void
 ctan_test (void)
 {
   ALL_RM_TEST (ctan, 0, ctan_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_c_c_data ctanh_test_data[] =
@@ -7049,11 +7094,13 @@ static const struct test_c_c_data ctanh_test_data[] =
     AUTO_TESTS_c_c (ctanh),
   };
 
+#if 0
 static void
 ctanh_test (void)
 {
   ALL_RM_TEST (ctanh, 0, ctanh_test_data, RUN_TEST_LOOP_c_c, END_COMPLEX);
 }
+#endif
 
 
 static const struct test_f_f_data erf_test_data[] =
