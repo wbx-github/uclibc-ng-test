@@ -39,6 +39,10 @@ ifeq ($(NO_MATH),1)
 DIRS := $(filter-out math,$(DIRS))
 endif
 
+ifeq ($(NO_CRYPT),1)
+DIRS := $(filter-out crypt,$(DIRS))
+endif
+
 test check all: run
 
 run: subdirs_run
