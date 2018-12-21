@@ -26,6 +26,7 @@ void run_cmd(char *cmd)
     posix_spawnattr_setflags(&attrs, POSIX_SPAWN_SETPGROUP | POSIX_SPAWN_SETSIGDEF);
     posix_spawnattr_setpgroup(&attrs, 0);
     posix_spawnattr_setsigdefault(&attrs, &defsignals);
+    posix_spawn_file_actions_init(&actions);
 
     printf("Run command: %s\n", cmd);
     status = posix_spawn(&pid, "/bin/sh", &actions, &attrs, argv, environ);
