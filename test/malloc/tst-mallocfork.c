@@ -9,10 +9,12 @@
 #include <sys/wait.h>
 #include "../test-skeleton.h"
 
+#ifdef __ARCH_USE_MMU__
+
 static void
 sig_handler (int signum)
 {
-  pid_t child = vfork ();
+  pid_t child = fork ();
   if (child == 0)
     exit (0);
   TEMP_FAILURE_RETRY (waitpid (child, NULL, 0));
@@ -35,7 +37,7 @@ do_test (void)
     }
 
   /* Create a child that sends the signal to be caught.  */
-  pid_t child = vfork ();
+  pid_t child = fork ();
   if (child == 0)
     {
       if (kill (parent, SIGALRM) == -1)
@@ -47,6 +49,17 @@ do_test (void)
 
   return 0;
 }
+
+#else
+
+static int
+do_test (void)
+{
+  printf("Skipping test on non-mmu host!\n");
+  return EXIT_SUCCESS;
+}
+
+#endif
 
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"
