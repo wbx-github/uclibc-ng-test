@@ -1,7 +1,15 @@
 # uClibc-ng malloc tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
-TESTS_DISABLED := time_malloc
+TESTS_DISABLED :=
+
+ifeq ($(TARGET_ARCH),arm)
+ifneq ($(MALLOC_STANDARD),y)
+TESTS_DISABLED += malloc tst-calloc
+endif
+endif
+
+TESTS_DISABLED += time_malloc
 
 ifneq ($(MALLOC_STANDARD),y)
 TESTS_DISABLED += tst-asprintf
