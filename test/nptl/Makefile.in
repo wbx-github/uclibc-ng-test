@@ -5,6 +5,11 @@ ifeq ($(TARGET_ARCH),metag)
 TESTS_DISABLED := tst-cleanup0 tst-cleanupx0
 endif
 
+# deadlock in nsimdrv
+ifeq ($(TARGET_ARCH),arc)
+TESTS_DISABLED := tst-cancel20
+endif
+
 # qemu crash
 ifeq ($(TARGET_ARCH),microblaze)
 TESTS_DISABLED := tst-tls2
