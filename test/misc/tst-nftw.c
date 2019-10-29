@@ -35,9 +35,9 @@ do_test(void)
 	perror("Creating path");
     if ((mkdir(subpath, 0700)) < 0)
 	perror("Creating subpath");
-    if ((open(filepath, O_CREAT)) < 0)
+    if ((open(filepath, O_CREAT, 0600)) < 0)
 	perror("Opening filepath");
-    if ((open(filesubpath, O_CREAT)) < 0)
+    if ((open(filesubpath, O_CREAT, 0600)) < 0)
 	perror("Opening filesubpath");
 
     if (nftw(path, process_one_entry, 100, (FTW_CHDIR|FTW_DEPTH|FTW_PHYS)) < 0)
