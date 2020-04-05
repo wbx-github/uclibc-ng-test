@@ -76,6 +76,10 @@
 #include <tls-macros-xtensa.h>
 #endif
 
+#ifdef __or1k__
+#include <tls-macros-or1k.h>
+#endif
+
 #if !defined TLS_LE || !defined TLS_IE \
       || !defined TLS_LD || !defined TLS_GD
 # error "No support for this architecture so far."
