@@ -56,8 +56,12 @@
 #include <tls-macros-mips.h>
 #endif
 
-#ifdef __powerpc__
+#if defined(__powerpc__) && !defined(__powerpc64__)
 #include <tls-macros-powerpc.h>
+#endif
+
+#if defined(__powerpc__) && defined(__powerpc64__)
+#include <tls-macros-powerpc64.h>
 #endif
 
 #ifdef __sh__
