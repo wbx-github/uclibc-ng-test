@@ -26,31 +26,6 @@ do_test (void)
 	  exit (1);
 	}
 
-      /* Dirty test code here: we peek into a private data structure.
-	 We make sure that the module gets assigned the same ID every
-	 time.  The value of the first round is used.  */
-#ifdef __UCLIBC__
-      if (modid == -1)
-	modid = ((struct dyn_elf *) h)->dyn->l_tls_modid;
-      else if (((struct dyn_elf *)h)->dyn->l_tls_modid != (size_t) modid)
-	{
-	  printf ("round %d: modid now %zu, initially %d\n",
-		  i,
-		  ((struct dyn_elf *)h)->dyn->l_tls_modid,
-		  modid);
-	  result = 1;
-	}
-#else
-      if (modid == -1)
-	modid = ((struct link_map *) h)->l_tls_modid;
-      else if (((struct link_map *) h)->l_tls_modid != modid)
-	{
-	  printf ("round %d: modid now %zd, initially %d\n",
-		  i, ((struct link_map *) h)->l_tls_modid, modid);
-	  result = 1;
-	}
-#endif
-
       foop = dlsym (h, "foo");
       if (foop == NULL)
 	{

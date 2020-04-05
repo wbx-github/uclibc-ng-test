@@ -1,6 +1,12 @@
 # uClibc-ng TLS tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
+CFLAGS += -DUSE_TLS=1 -DHAVE___THREAD=1 -I.
+
+ifneq ($(ARCH),alpha)
+CFLAGS += -DHAVE_TLS_MODEL_ATTRIBUTE=1
+endif
+
 TESTS := tst-tls1 tst-tls2 tst-tls3 tst-tls4 tst-tls5 tst-tls6 tst-tls7	\
 	tst-tls8 tst-tls9 tst-tls10 tst-tls11 tst-tls12 tst-tls13	\
 	tst-tls14 tst-tls15 tst-tls16 tst-tls17 tst-tls18 tst-tls-at-ctor \
