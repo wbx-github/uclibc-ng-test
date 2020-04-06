@@ -16,6 +16,10 @@
 /* XXX Until we get compiler support we don't need declarations.  */
 #define VAR_INT_DECL(x)
 
+#ifdef __aarch64__
+#include <tls-macros-aarch64.h>
+#endif
+
 #ifdef __alpha__
 #include <tls-macros-alpha.h>
 #endif
