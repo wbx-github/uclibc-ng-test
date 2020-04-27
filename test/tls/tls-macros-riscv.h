@@ -20,8 +20,6 @@
 
 #include <sys/cdefs.h>
 #include <sys/asm.h>
-#include <sysdep.h>
-#include "dl-tls.h"
 
 #define TLS_GD(x)                                       \
         ({ void *__result;                              \

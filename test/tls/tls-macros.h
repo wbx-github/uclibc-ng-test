@@ -68,7 +68,7 @@
 #include <tls-macros-powerpc64.h>
 #endif
 
-#ifdef __riscv__
+#ifdef __riscv
 #include <tls-macros-riscv.h>
 #endif
 
