@@ -68,6 +68,10 @@
 #include <tls-macros-powerpc64.h>
 #endif
 
+#ifdef __riscv__
+#include <tls-macros-riscv.h>
+#endif
+
 #ifdef __sh__
 #include <tls-macros-sh.h>
 #endif
