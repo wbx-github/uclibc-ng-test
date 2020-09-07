@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern void *__dso_handle __attribute__ ((__weak__));
 
 extern int val;
 
@@ -46,7 +47,6 @@ static void
 __attribute__ ((constructor))
 init (void)
 {
-  extern void *__dso_handle;
   printf ("dsohandle = %p\n", __dso_handle);
 
   if (pthread_atfork (prepare, parent, child) != 0)
