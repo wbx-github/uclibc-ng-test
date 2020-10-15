@@ -36,6 +36,10 @@
 #endif
 #endif
 
+#ifdef __csky__
+#include <tls-macros-csky.h>
+#endif
+
 #ifdef __i386__
 #include <tls-macros-i386.h>
 #endif
