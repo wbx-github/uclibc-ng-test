@@ -64,6 +64,10 @@
 #include <tls-macros-mips.h>
 #endif
 
+#ifdef __nios2__
+#include <tls-macros-nios2.h>
+#endif
+
 #if defined(__powerpc__) && !defined(__powerpc64__)
 #include <tls-macros-powerpc.h>
 #endif
