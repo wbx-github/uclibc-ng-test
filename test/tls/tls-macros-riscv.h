@@ -1,8 +1,6 @@
 /* Macros to support TLS testing in times of missing compiler support.
    Copyright (C) 2017-2020 Free Software Foundation, Inc.
 
-   This file is part of the GNU C Library.
-
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
@@ -16,10 +14,6 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
-
-
-#include <sys/cdefs.h>
-#include <sys/asm.h>
 
 #define TLS_GD(x)                                       \
         ({ void *__result;                              \
