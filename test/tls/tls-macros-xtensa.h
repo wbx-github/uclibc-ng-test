@@ -15,7 +15,7 @@
      __asm__ ("movi  a8, _TLS_MODULE_BASE_@TLSFUNC\n\t"			\
 	  "movi a10, _TLS_MODULE_BASE_@TLSARG\n\t"			\
 	  "callx8.tls a8, _TLS_MODULE_BASE_@TLSCALL\n\t"		\
-	  "movi %0, " #x "@TPOFF\n\t"					\
+	  "movi %0, " #x "@DTPOFF\n\t"					\
 	  "add %0, %0, a10\n\t"						\
 	  : "=r" (__l)							\
 	  :								\
@@ -38,7 +38,7 @@
      __asm__ ("movi  a0, _TLS_MODULE_BASE_@TLSFUNC\n\t"			\
 	  "movi a2, _TLS_MODULE_BASE_@TLSARG\n\t"			\
 	  "callx0.tls a0, _TLS_MODULE_BASE_@TLSCALL\n\t"		\
-	  "movi %0, " #x "@TPOFF\n\t"					\
+	  "movi %0, " #x "@DTPOFF\n\t"					\
 	  "add %0, %0, a2\n\t"						\
 	  : "=r" (__l)							\
 	  :								\
