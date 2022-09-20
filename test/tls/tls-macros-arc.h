@@ -2,14 +2,12 @@
 #define TLS_LD(x)	TLS_IE(x)
 
 #define TLS_GD(x)					\
-  ({ int *__result;					\
-     __asm__ ("add r0, pcl, @" #x "@tlsgd      \n"     	\
-	  ".tls_gd_ld " #x "`bl __tls_get_addr@plt \n"	\
-	  "mov %0, r0                    \n"		\
-	  : "=&r" (__result)				\
-	  ::"r0","r1","r2","r3","r4","r5","r6","r7",	\
-	    "r8","r9","r10","r11","r12");		\
-     __result; })
+  ({ void *__result;					\
+     extern void *__tls_get_addr (void *);      \
+     __asm__ ("add %0, pcl, @" #x "@tlsgd \n"     \
+        ".tls_gd_ld " #x " \n"    \
+      : "=r" (__result));		\
+     (int *)__tls_get_addr(__result); })
 
 #define TLS_LE(x)					\
   ({ int *__result;					\
