@@ -24,7 +24,7 @@
 #include <tls-macros-alpha.h>
 #endif
 
-#ifdef __arc__
+#if defined(__arc__) || defined(__ARC64_ARCH32__)
 #include <tls-macros-arc.h>
 #endif
 
