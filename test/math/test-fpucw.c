@@ -1,4 +1,4 @@
-/* Copyright (C) 2000-2016 Free Software Foundation, Inc.
+/* Copyright (C) 2000 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Andreas Jaeger <aj@suse.de>, 2000.
 
@@ -19,12 +19,8 @@
 #include <fpu_control.h>
 #include <stdio.h>
 
-#ifndef FPU_CONTROL
-# define FPU_CONTROL _FPU_DEFAULT
-#endif
-
-static int
-do_test (void)
+int
+main (void)
 {
 #ifdef _FPU_GETCW
 /* Some architectures don't have _FPU_GETCW (e.g. Linux/Alpha).  */
@@ -34,16 +30,13 @@ do_test (void)
 
   cw &= ~_FPU_RESERVED;
 
-  if (cw != (FPU_CONTROL & ~_FPU_RESERVED))
+  if (cw != (_FPU_DEFAULT & ~_FPU_RESERVED))
     printf ("control word is 0x%lx but should be 0x%lx.\n",
-	    (long int) cw, (long int) (FPU_CONTROL & ~_FPU_RESERVED));
+	    (long int) cw, (long int) (_FPU_DEFAULT & ~_FPU_RESERVED));
 
-  return cw != (FPU_CONTROL & ~_FPU_RESERVED);
+  return cw != (_FPU_DEFAULT & ~_FPU_RESERVED);
 
 #else
   return 0;
 #endif
 }
-
-#define TEST_FUNCTION do_test ()
-#include "../test-skeleton.c"
