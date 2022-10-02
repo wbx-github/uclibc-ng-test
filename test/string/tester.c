@@ -622,6 +622,10 @@ test_strchrnul (void)
    }
 }
 
+#if !defined (__UCLIBC__) || !defined(__GLIBC__)
+#define rawmemchr(s,c) memchr((s),(size_t)-1,(c))
+#endif
+
 static void
 test_rawmemchr (void)
 {
