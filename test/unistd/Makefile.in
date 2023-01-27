@@ -11,6 +11,9 @@ ifeq ($(TARGET_ARCH),or1k)
 TESTS_DISABLED += tst-pselect
 endif
 
+# avoid endless loop
+TESTS_DISABLED += exec-null
+
 OPTS_getopt      := -abcXXX -9
 OPTS_getopt_long := --add XXX --delete YYY --verbose
 # assume UCLIBC_HAS_GNU_GETOPT is enabled
