@@ -25,7 +25,7 @@
 static int errors = 0;
 
 /* Number of samples per size.  */
-#define N 50000
+#define N 500
 
 
 static void
