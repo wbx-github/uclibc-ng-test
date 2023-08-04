@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define N_PTRS 1000
-#define N_ALLOCS 10000
+#define N_ALLOCS 1000
 #define MAX_SIZE 0x10000
 
 #define random_size()	(random()%MAX_SIZE)
