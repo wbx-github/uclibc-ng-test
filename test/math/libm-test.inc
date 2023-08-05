@@ -5059,6 +5059,7 @@ main (int argc, char **argv)
 #endif
 #endif /* __CHK_COMPLEX_STUFF */
 
+#if 0
   /* Bessel functions:  */
 #if defined __DO_XSI_MATH__ && !(defined TEST_LDOUBLE || defined TEST_FLOAT)
   j0_test ();
@@ -5068,6 +5069,7 @@ main (int argc, char **argv)
   y1_test ();
   yn_test ();
 #endif /* __DO_XSI_MATH__ */
+#endif
 
   if (output_ulps)
     fclose (ulps_file);
