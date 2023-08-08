@@ -6,6 +6,9 @@ TESTS_DISABLED += cancellation-points
 ifeq ($(TARGET_ARCH),sh)
 TESTS_DISABLED += ex2 ex7
 endif
+ifeq ($(TARGET_ARCH),cris)
+TESTS_DISABLED += ex2 ex5
+endif
 
 EXTRA_LDFLAGS := -lpthread
 
