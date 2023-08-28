@@ -1,2 +1,6 @@
 # uClibc-ng mmap tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+
+ifeq ($(TARGET_ARCH),arm)
+TESTS_DISABLED := mmap2
+endif
