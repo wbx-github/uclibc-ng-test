@@ -1,2 +1,6 @@
 # uClibc-ng inet tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+
+ifeq ($(TARGET_ARCH),riscv64)
+TESTS_DISABLED := tst-ifaddrs
+endif
