@@ -12,7 +12,7 @@ endif
 
 # qemu crash
 ifeq ($(TARGET_ARCH),microblaze)
-TESTS_DISABLED := tst-tls2 tst-cancel10
+TESTS_DISABLED := tst-tls2 tst-cancel10x
 endif
 
 # deadlock
