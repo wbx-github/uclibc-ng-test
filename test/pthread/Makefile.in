@@ -3,6 +3,9 @@
 
 TESTS_DISABLED += cancellation-points
 
+ifeq ($(TARGET_ARCH),microblaze)
+TESTS_DISABLED += ex3
+endif
 ifeq ($(TARGET_ARCH),sh)
 TESTS_DISABLED += ex2 ex7
 endif
