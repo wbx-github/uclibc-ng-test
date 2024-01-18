@@ -22,7 +22,7 @@
 int
 main (void)
 {
-#if defined(_FPU_GETCW) && !defined(__uClinux__)
+#if defined(_FPU_GETCW) && !defined(__uClinux__) && !defined(__mcoldfire__)
 /* Some architectures don't have _FPU_GETCW (e.g. Linux/Alpha).  */
   fpu_control_t cw;
 
