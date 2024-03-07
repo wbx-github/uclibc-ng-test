@@ -19,7 +19,7 @@
 int
 main (int argc, char *argv[])
 {
-#if defined(__arm__) || defined(__mips__) || defined(__or1k__) || defined(__powerpc__) || defined(__sparc__) || defined(__xtensa__)
+#if defined(__arc__) || defined(__arm__) || defined(__i386__) || defined(__microblaze__) || defined(__mips__) || defined(__or1k__) || defined(__powerpc__) || defined(__sh__) || defined(__sparc__) || defined(__xtensa__)
   char name[PATH_MAX];
   int retval = 0;
   int fd;
