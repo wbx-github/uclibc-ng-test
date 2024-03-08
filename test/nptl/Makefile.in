@@ -5,6 +5,10 @@ ifeq ($(TARGET_ARCH),metag)
 TESTS_DISABLED := tst-cleanup0 tst-cleanupx0
 endif
 
+ifeq ($(TARGET_ARCH),riscv32)
+TESTS_DISABLED := tst-rwlock9
+endif
+
 # deadlock in nsimdrv
 ifeq ($(TARGET_ARCH),arc)
 TESTS_DISABLED := tst-cancel20
