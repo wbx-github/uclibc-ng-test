@@ -17,6 +17,7 @@
 
 #define TLS_GD(x)                                       \
         ({ void *__result;                              \
+	extern void *__tls_get_addr (void *);           \
         asm ("la.tls.gd %0, " #x "\n\t"                 \
              : "=r" (__result));                        \
         __tls_get_addr (__result); })
