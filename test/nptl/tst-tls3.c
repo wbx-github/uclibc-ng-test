@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
 #include "../test-skeleton.h"
 
 #define THE_SIG SIGUSR1
@@ -68,17 +69,11 @@ pthread_barrier_t b;
 #define TOTAL_SIGS 1000
 int nsigs;
 
+#define TCB_ALIGNMENT 16
 
 int
 do_test (void)
 {
-#if !HAVE___THREAD
-
-  puts ("No __thread support in compiler, test skipped.");
-
-  return 0;
-#else
-
   if ((uintptr_t) pthread_self () & (TCB_ALIGNMENT - 1))
     {
       puts ("initial thread's struct pthread not aligned enough");
@@ -214,7 +209,6 @@ do_test (void)
     }
 
   return 0;
-#endif
 }
 
 

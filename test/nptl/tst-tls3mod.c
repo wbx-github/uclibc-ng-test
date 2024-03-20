@@ -24,9 +24,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#if HAVE___THREAD
-
 static pthread_barrier_t* b = NULL;
+
+#define TCB_ALIGNMENT 16
 
 #define TOTAL_SIGS 1000
 static int* nsigs = NULL;
@@ -99,5 +99,3 @@ tf (void *arg)
 
   return NULL;
 }
-
-#endif
