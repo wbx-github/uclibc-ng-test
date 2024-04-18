@@ -5,6 +5,10 @@ ifeq ($(TARGET_ARCH),arm)
 TESTS_DISABLED := mmap2
 endif
 
+ifeq ($(TARGET_ARCH),riscv32)
+TESTS_DISABLED := mmap2
+endif
+
 ifeq ($(TARGET_ARCH),xtensa)
 TESTS_DISABLED := mmap2
 endif
