@@ -59,7 +59,7 @@ static int
 convert (const char *tocode, const char *fromcode, char *inbufp,
 	 size_t inbytesleft, char *outbufp, size_t outbytesleft)
 {
-  iconv_t *ic;
+  iconv_t ic;
   size_t outbytes = outbytesleft;
   int ret;
 
