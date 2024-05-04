@@ -34,6 +34,8 @@
 #if _POSIX_THREADS
 # include <pthread.h>
 
+#ifdef __ARCH_USE_MMU__
+
 static pid_t pid;
 static mqd_t m;
 static const char message[] = "hello";
@@ -243,3 +245,13 @@ do_test (void)
 #endif
 
 #include "../test-skeleton.c"
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif

@@ -28,6 +28,8 @@
 #include <sys/time.h>
 #include "../test-skeleton.h"
 
+#ifdef __ARCH_USE_MMU__
+
 //int gettimeofday(struct timeval *tv, struct timezone *tz);
 
 
@@ -189,3 +191,13 @@ do_test (void)
 #define TIMEOUT 3
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif

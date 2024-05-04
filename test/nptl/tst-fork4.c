@@ -24,6 +24,7 @@
 #include <sys/wait.h>
 #include <string.h>
 
+#ifdef __ARCH_USE_MMU__
 
 static int
 do_test (void)
@@ -62,3 +63,13 @@ do_test (void)
 
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif

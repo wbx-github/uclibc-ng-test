@@ -26,6 +26,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+#ifdef __ARCH_USE_MMU__
+
 /* This function is intended to rack up both user and system time.  */
 static void
 chew_cpu (void)
@@ -304,3 +306,13 @@ do_test (void)
 #define TIMEOUT 5
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif

@@ -13,6 +13,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+#ifdef __ARCH_USE_MMU__
+
 static clockid_t child_clock;
 
 #define TEST_CLOCK child_clock
@@ -128,3 +130,13 @@ setup_test (void)
 #endif
 
 #include "tst-timer4.c"
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif

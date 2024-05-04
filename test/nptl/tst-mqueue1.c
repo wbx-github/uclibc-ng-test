@@ -29,6 +29,8 @@
 #include "tst-mqueue.h"
 #include "../test-skeleton.h"
 
+#ifdef __ARCH_USE_MMU__
+
 static int
 intcmp (const void *a, const void *b)
 {
@@ -415,3 +417,13 @@ do_test (void)
 }
 
 #include "../test-skeleton.c"
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif

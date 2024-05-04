@@ -25,6 +25,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 
+#ifdef __ARCH_USE_MMU__
 
 static char fname[] = "/tmp/tst-cond12-XXXXXX";
 static int fd;
@@ -193,3 +194,13 @@ do_test (void)
 
   return 0;
 }
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif

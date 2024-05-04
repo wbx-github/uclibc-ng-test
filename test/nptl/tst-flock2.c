@@ -27,6 +27,8 @@
 #include <sys/wait.h>
 #include "../test-skeleton.h"
 
+#ifdef __ARCH_USE_MMU__
+
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 static int fd;
@@ -258,3 +260,13 @@ do_test (void)
 
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"
+
+#else
+
+int main(void)
+{
+    printf("Skipping test on non-mmu host!\n");
+    return 23;
+}
+
+#endif
