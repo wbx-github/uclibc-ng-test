@@ -222,18 +222,15 @@ handler_killpid(int sig)
 
 /* We provide the entry point here.  */
 int
-main (int argc, char *argv[])
+main (int argc, char *argv[], char *envp[])
 {
-#ifdef __ARCH_USE_MMU__
   int direct = 0;	/* Directly call the test function?  */
-#else
-  int direct = 1;
-#endif
   int status;
   int opt;
   unsigned int timeoutfactor = 1;
   pid_t termpid;
   char *envstr_timeoutfactor;
+  char **argv1;
 
   /* Make uses of freed and uninitialized memory known.  */
 #ifdef __MALLOC_STANDARD__
@@ -303,19 +300,21 @@ main (int argc, char *argv[])
   /* make sure temporary files are deleted.  */
   atexit (delete_temp_files);
 
-  /* Correct for the possible parameters.  */
-  argv[optind - 1] = argv[0];
-  argv += optind - 1;
-  argc -= optind - 1;
-
-  /* Call the initializing function, if one is available.  */
-#ifdef PREPARE
-  PREPARE (argc, argv);
-#endif
-
   /* If we are not expected to fork run the function immediately.  */
   if (direct)
-    return TEST_FUNCTION;
+    {
+      /* Correct for the possible parameters.  */
+      argv[optind - 1] = argv[0];
+      argv += optind - 1;
+      argc -= optind - 1;
+
+      /* Call the initializing function, if one is available.  */
+#ifdef PREPARE
+      PREPARE (argc, argv);
+#endif
+
+      return TEST_FUNCTION;
+    }
 
   /* Set up the test environment:
      - prevent core dumps
@@ -340,15 +339,51 @@ main (int argc, char *argv[])
       if (setpgid (0, 0) != 0)
 	printf ("Failed to set the process group ID: %m\n");
 
+      /* Correct for the possible parameters.  */
+      argv[optind - 1] = argv[0];
+      argv += optind - 1;
+      argc -= optind - 1;
+
+      /* Call the initializing function, if one is available.  */
+#ifdef PREPARE
+      PREPARE (argc, argv);
+#endif
+
       /* Execute the test function and exit with the return value.   */
       exit (TEST_FUNCTION);
     }
   else if (pid < 0)
-#endif
     {
       perror ("Cannot fork test program");
       exit (1);
     }
+#else
+  argv1 = malloc ((argc + 2) * sizeof(void *));
+  argv1[0] = argv[0];
+  argv1[1] = "-d";
+  memcpy(argv1 + 2, argv + 1, argc * sizeof(void *));
+
+  pid = vfork ();
+  if (pid == 0)
+    {
+      /* This is the child.  */
+      /* We put the test process in its own pgrp so that if it bogusly
+	 generates any job control signals, they won't hit the whole build.  */
+      if (setpgid (0, 0) != 0)
+	printf ("Failed to set the process group ID: %m\n");
+
+      if (execve (argv1[0], argv1, envp) < 0)
+	{
+	  perror ("Cannot exec test program");
+	  _exit (1);
+	}
+    }
+  else if (pid < 0)
+    {
+      perror ("Cannot vfork test program");
+      exit (1);
+    }
+#endif
 
 #ifdef __XXX_HANDLE_CTRL_C
   signal (SIGTERM, handler_killpid);
