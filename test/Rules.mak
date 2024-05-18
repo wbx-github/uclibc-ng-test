@@ -21,6 +21,7 @@ TARGET_ARCH:=$(shell $(CC) -dumpmachine | sed -e s'/-.*//' \
 	-e 's/sun.*/sparc/' -e 's/sparc.*/sparc/' \
 	-e 's/sa110/arm/' -e 's/arm.*/arm/g' \
 	-e 's/m68k.*/m68k/' \
+	-e 's/nds32.*/nds32/' \
 	-e 's/parisc.*/hppa/' \
 	-e 's/ppc/powerpc/g' \
 	-e 's/sh[234].*/sh/' \
