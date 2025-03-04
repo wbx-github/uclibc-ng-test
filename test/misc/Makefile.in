@@ -9,6 +9,9 @@ endif
 ifeq ($(TARGET_ARCH),bfin)
 TESTS_DISABLED += tst-rlimit tst-rlimit64
 endif
+ifeq ($(TARGET_ARCH),m68k)
+TESTS_DISABLED += tst-rlimit tst-rlimit64
+endif
 
 CFLAGS_dirent64 := -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 CFLAGS_tst-rlimit64 := -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
