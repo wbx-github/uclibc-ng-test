@@ -27,6 +27,14 @@ void print_shmid_ds(struct shmid_ds *buf) {
 
 int main() {
 
+    struct timespec ts_init, ts_final;
+
+    // Save system time
+    if (clock_gettime(CLOCK_REALTIME, &ts_init) == -1) {
+        perror("Error getting time");
+        return 1;
+    }
+
     if (clock_settime(CLOCK_REALTIME, &ts) == -1) { // Set the time to after 2038
         perror("Error setting time");
         return 1;
@@ -66,5 +74,11 @@ int main() {
     print_shmid_ds(&buf);
 
     shmctl(shmid, IPC_RMID, NULL);
+
+    // Restore system time
+    clock_gettime(CLOCK_REALTIME, &ts_final);
+    ts_init.tv_sec = ts_init.tv_sec + ts_final.tv_sec - ts.tv_sec;
+    clock_settime(CLOCK_REALTIME, &ts_init);
+
     return 0;
 }
