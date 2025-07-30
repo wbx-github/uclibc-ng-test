@@ -1,84 +1,113 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/sem.h>
+#include <sys/shm.h>
 #include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 
 // Define the message structure
-struct msg_buffer {
-    long msg_type;
-    char msg_text[100];
+struct message {
+  long mtype;       // Message Type
+  char mtext[100];  // Message body
 };
 
-void print_queue_times(int msgid) {
-     struct msqid_ds info;
-     if (msgctl(msgid, IPC_STAT, &info) == -1) {
-	 perror("msgctl IPC_STAT failed");
-         exit(1);
-     }
+struct timespec ts = {
+  .tv_sec = 3468960000,  // 2075-12-05 Destination timestamp
+  .tv_nsec = 0
+};
 
-     printf("Last send time (msg_stime): %s", ctime(&info.msg_stime));     
-     printf("Last recv time (msg_rtime): %s", ctime(&info.msg_rtime));     
-     printf("Last change time (msg_ctime): %s", ctime(&info.msg_ctime));     
-
+void print_msqid_ds(struct msqid_ds *buf) {
+  printf("perms: %o\n", buf->msg_perm.mode);
+  printf("UID: %d\n", buf->msg_perm.uid);
+  printf("GID: %d\n", buf->msg_perm.gid);
+  printf("Current number of bytes in the queue:  %d\n", buf->msg_cbytes);
+  printf("Number of messages in the queue:  %d\n", buf->msg_qnum);
+  printf("Maximum number of bytes allowed in the queue: %d\n", buf->msg_qbytes);
+  printf("Last sent time:  %s", buf->msg_stime ? ctime(&buf->msg_stime) + 4 : "Not set \n");
+  printf("Last received time:  %s", buf->msg_rtime ? ctime(&buf->msg_rtime) + 4 : "Not set \n");
 }
 
+
 int main() {
-    key_t key;
-    int msgid;
-    struct msqid_ds buf;
 
-    // Generate a unique key
-    key = ftok("progfile", 65);
-   
-    // Create a message queue and return its id
-    msgid = msgget(key, 0666 | IPC_CREAT);
-    if (msgid == -1) {
-        perror("msgget failed");
-        exit(EXIT_FAILURE);
-    }
+  if (clock_settime(CLOCK_REALTIME, &ts) == -1) { // Set the time to after 2038
+        perror("Error setting time");
+        return 1;
+  }
 
-    // Prepare message to send
-    struct msg_buffer message;
-    message.msg_type = 1;
-    strcpy(message.msg_text, "Hello from message queue!");
+  key_t key = ftok(".", 123);
+  if (key == -1) {
+    perror("ftok");
+    return 1;
+  }
 
-    // Send the message
-    if (msgsnd(msgid, &message, sizeof(message.msg_text), 0) < 0) {
-	perror("msgsnd failed");
-        exit(EXIT_FAILURE);
-    }
+  int msqid = msgget(key, 0644 | IPC_CREAT);  // Set to write/read only (not full permissions)
+  if (msqid == -1) {
+    perror("msgget");
+    return 1;
+  }
 
-    printf("Message sent: %s\n", message.msg_text);
-    print_queue_times(msgid);  // Show msg_stime after sending
+  // Get message queue status
+  struct msqid_ds buf;
+  memset(&buf, 0, sizeof(buf));  // Clear the structure
+  if (msgctl(msqid, IPC_STAT, &buf) == -1) {
+    perror("msgctl");
+    return 1;
+  }
 
-    // Get information about the message queue
-    if (msgctl(msgid, IPC_STAT, &buf) == -1) {
-        perror("msgctl - IPC_STAT failed");
-        exit(EXIT_FAILURE);
-    }
+  // Print message queue information
+  printf("=== Initial queue status ===\n");
+  printf("key: %x\n", key);
+  printf("msqid: %d\n", msqid);
+  print_msqid_ds(&buf);
 
-    // Print some info from the msqid_ds structure
-    printf("Message queue ID: %d\n", msgid);
+  // Prepare the message to be sent
+  struct message msg = {0};
+  msg.mtype = 1;  // Set the message type to 1
+  int i =0;
 
-    // Receive the message
-    struct msg_buffer received;
-    if (msgrcv(msgid, &received, sizeof(received.msg_text), 1, 0) < 0) {
-	perror("msgrcv failed");
-        exit(EXIT_FAILURE);
-    }
-    printf("Message received: %s\n", received.msg_text);
-    print_queue_times(msgid);  // Show msg_stime after receiving
+  for(i =0; i< 2; i++)
+  {
+  snprintf(msg.mtext, sizeof(msg.mtext), "Hello, Message Queue %d!", i);
+  msg.mtext[sizeof(msg.mtext) - 1] = '\0';  // Ensure the message ends with a '\0'
 
-    // Remove the message queue
-    if (msgctl(msgid, IPC_RMID, NULL) == -1) {
-        perror("msgctl - IPC_RMID failed");
-        exit(EXIT_FAILURE);
-    }
+  // Send the message
+  if (msgsnd(msqid, &msg, strlen(msg.mtext) + 1, 0) == -1) {
+    perror("msgsnd");
+    return 1;
+  }
+  printf("Message sent: %s\n", msg.mtext);
 
-    printf("Message queue removed successfully.\n");
+  // Check the queue status again
+  memset(&buf, 0, sizeof(buf));  // Clear the structure
+  if (msgctl(msqid, IPC_STAT, &buf) == -1) {
+    perror("msgctl");
+    return 1;
+  }
 
-    return 0;
+  printf("\n=== Queue status after the message is sent ===\n");
+  print_msqid_ds(&buf);
+  }
+
+  // Change permissions
+  buf.msg_perm.mode = 0600;  // New permissions
+
+  if (msgctl(msqid, IPC_SET, &buf) == -1) {
+      perror("msgctl IPC_SET failed");
+      msgctl(msqid, IPC_RMID, NULL);
+      exit(EXIT_FAILURE);
+  }
+
+  if ((buf.msg_stime - ts.tv_sec > 60) || (ts.tv_sec - buf.msg_stime > 60)) {
+      printf("\nMsgctl get a error time! \n");
+      exit(EXIT_FAILURE);
+  }
+
+  msgctl(msqid, IPC_RMID, NULL);
+
+  return 0;
 }
