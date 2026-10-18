@@ -51,12 +51,26 @@ noconfig_targets := menuconfig config nconfig \
 
 CROSS_COMPILE ?= $(CROSS)
 
+ifeq ($(origin CC),default)
 CC         = $(CROSS_COMPILE)gcc
+endif
+ifeq ($(origin AR),default)
 AR         = $(CROSS_COMPILE)ar
+endif
+ifneq ($(LLVM),)
+# make LLVM=1 CLANG_TARGET=aarch64-linux-gnu
+CC         = clang --target=$(CLANG_TARGET)
+LD         = ld.lld
+AR         = llvm-ar
+NM         = llvm-nm
+OBJDUMP    = llvm-objdump
+STRIPTOOL  = llvm-strip
+else
 LD         = $(CROSS_COMPILE)ld
 NM         = $(CROSS_COMPILE)nm
 OBJDUMP    = $(CROSS_COMPILE)objdump
 STRIPTOOL  = $(CROSS_COMPILE)strip
+endif
 
 INSTALL    = install
 LN         = ln
