@@ -30,7 +30,7 @@ TST_MBRLEN tst_mbrlen_loc [] = {
 	},
 	{
 	  {
-	    { 0,		1,  0,		     },
+	    { 0,		1,  -2,		     },
 	    { 0,		1,  0,		     },
 	    { 0,		1,  1,		     },
 	  }
@@ -46,7 +46,7 @@ TST_MBRLEN tst_mbrlen_loc [] = {
 	},
 	{
 	  {
-	    { 0,		1,  0,		     },
+	    { 0,		1,  -2,		     },
 	    { 0,		1,  1,		     },
 	    { 0,		1,  1,		     },
 	  }
@@ -68,7 +68,7 @@ TST_MBRLEN tst_mbrlen_loc [] = {
 	},
 	{
 	  {
-	    { 0,		1,  0,		     },
+	    { 0,		1,  -2,		     },
 	    { 0,		1,  1,		     },
 	    { 0,		1,  1,		     },
 	  }
@@ -84,7 +84,7 @@ TST_MBRLEN tst_mbrlen_loc [] = {
 	},
 	{
 	  {
-	    { 0,		1,  0,		     },
+	    { 0,		1,  -2,		     },
 	    /* POSIX: every byte is a character in the C locale.  */
 	    { 0,		1,  1,		     },
 	    { 0,		1,  1,		     },
@@ -146,7 +146,7 @@ TST_MBRLEN tst_mbrlen_loc [] = {
 	},
 	{
 	  {
-	    { 0,		1,  0,		     },
+	    { 0,		1,  -2,		     },
 	    { 0,		1, -2,		     },
 	    { EILSEQ,	1, -1,		     },
 	  }
@@ -207,7 +207,7 @@ TST_MBRLEN tst_mbrlen_loc [] = {
 	},
 	{
 	  {
-	    { 0,		1,  0,		     },
+	    { 0,		1,  -2,		     },
 	    { 0,		1, -2,		     },
 	    { EILSEQ,	1, -1,		     },
 	  }
