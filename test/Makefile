@@ -11,13 +11,13 @@ include Rules.mak
 # everything.
 PYTHON ?= python3
 ifneq ($(ALL_TESTS),1)
-DISABLE_VARS := $(shell CC='$(CC)' CFLAGS='$(CFLAGS)' TARGET_ARCH='$(TARGET_ARCH)' $(PYTHON) $(top_srcdir)get_disabled_tests.py)
+DISABLE_VARS := $(shell CC='$(CC)' CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' TARGET_ARCH='$(TARGET_ARCH)' $(PYTHON) $(top_srcdir)get_disabled_tests.py)
 ifneq ($(.SHELLSTATUS),0)
 $(error get_disabled_tests.py failed)
 endif
 $(info disabled by get_disabled_tests.py: $(DISABLE_VARS))
 $(foreach v,$(DISABLE_VARS),$(if $(filter undefined,$(origin $(firstword $(subst =, ,$(v))))),$(eval $(v))))
-export DISABLED_TESTS
+export DISABLED_TESTS NO_PIE
 endif
 
 ALL_SUBDIRS := $(patsubst %/Makefile,%,$(wildcard */Makefile))

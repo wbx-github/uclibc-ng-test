@@ -18,6 +18,11 @@ ifneq ($(filter-out test,$(strip $(TESTS))),$(strip $(TESTS)))
 $(error Sanity check: cannot have a test named "test.c")
 endif
 
+# NO_PIE comes from get_disabled_tests.py, where a PIE cannot be linked.
+ifeq ($(NO_PIE),1)
+TESTS := $(filter-out %-pie,$(TESTS))
+endif
+
 TARGETS := $(TESTS)
 
 CLEAN_TARGETS := $(TARGETS)

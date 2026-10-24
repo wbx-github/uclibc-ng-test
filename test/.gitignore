@@ -15,6 +15,7 @@ uclibcng-testrunner
 # Executable test
 #
 *_glibc
+*-pie
 argp/argp-ex[1-4]
 argp/argp-test
 argp/bug-argp1

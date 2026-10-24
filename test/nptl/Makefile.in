@@ -33,7 +33,8 @@ TESTS := tst-align tst-align2 tst-atfork1 tst-attr1 tst-attr2 tst-attr3	\
 	tst-tls1 tst-tls2 tst-tls3 tst-tls4 tst-tls5 tst-tsd1 tst-tsd2	\
 	tst-tsd3 tst-tsd4 tst-tsd5 tst-umask1 tst-cond-deadlock 	\
 	tst-align3 tst-cancel4 tst-cancel5 tst-cancel18 tst-cancel23	\
-	tst-cancel25 tst-cancelx2 tst-cancelx3 tst-cancelx4 tst-cancelx6 \
+	tst-cancel25 tst-cancelx2 tst-cancelx3 tst-cancelx4 \
+	tst-cancelx4-pie tst-cancelx6 \
 	tst-cancelx7 tst-cancelx8 tst-cancelx9 tst-cancelx10 tst-cancelx11 \
 	tst-cancelx12 tst-cancelx13 tst-cancelx14 tst-cancelx15 tst-cancelx16 \
 	tst-cancelx18 tst-cancelx20 tst-cancelx21 tst-cleanupx0 tst-cleanupx1 \
@@ -88,6 +89,10 @@ LDFLAGS_tst-cancelx18 := -lrt
 LDFLAGS_tst-cancel23 := -lc -lpthread
 LDFLAGS_tst-vfork1x := -lc -lpthread
 LDFLAGS_tst-vfork2x := -lc -lpthread
+# PIE build: forced unwind walks frames of the relocated main program,
+# so the FDE lookup for the executable runs with a load bias.
+CFLAGS_tst-cancelx4-pie += -fexceptions -fPIE
+LDFLAGS_tst-cancelx4-pie := -pie
 
 CFLAGS_tst-cancelx2 += -fexceptions
 CFLAGS_tst-cancelx3 += -fexceptions

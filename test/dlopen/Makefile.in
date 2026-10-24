@@ -2,7 +2,8 @@
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 TESTS := dltest dltest2 dlstatic test1 test2 test3 dlundef dlafk dladdr \
-	testscope nodelete nodelete1 tst-origin
+	testscope nodelete nodelete1 tst-origin \
+	dladdr-pie dltest-pie dlundef-pie
 
 LDFLAGS_libtest.so := -lpthread
 
@@ -20,6 +21,15 @@ LDFLAGS_test3    := -ldl ./libtest1.so ./libtest2.so -Wl,-rpath,.
 LDFLAGS_dladdr   := -ldl
 LDFLAGS_testscope:= -ldl
 LDFLAGS_tst-origin:= -ldl -Wl,-rpath,\$$ORIGIN/testlib
+
+# PIE builds: the executable is ET_DYN, so dladdr/dlopen/dlsym have to
+# deal with the load bias of the main program itself.
+CFLAGS_dladdr-pie  := -fPIE
+CFLAGS_dltest-pie  := -fPIE -DLIBNAME="\"./libtest.so\""
+CFLAGS_dlundef-pie := -fPIE
+LDFLAGS_dladdr-pie  := -pie -ldl
+LDFLAGS_dltest-pie  := -pie -ldl
+LDFLAGS_dlundef-pie := -pie -ldl
 
 DEBUG_LIBS := X
 WRAPPER := env $(DEBUG_LIBS)=all LD_LIBRARY_PATH="$$PWD:.:$(LD_LIBRARY_PATH)"
@@ -46,9 +56,11 @@ endif
 LDFLAGS-OMIT-libC.c = -Wl,-z,now
 
 dltest: libtest.so
+dltest-pie: libtest.so
 dltest2: libtest3.so
 dlstatic: libstatic.so
 dlundef: libundef.so
+dlundef-pie: libundef.so
 dlafk: libafk.so
 testscope:libA.so
 libafk.so: libafk-temp.so

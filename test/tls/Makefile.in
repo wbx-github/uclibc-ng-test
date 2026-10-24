@@ -10,7 +10,17 @@ endif
 TESTS := tst-tls1 tst-tls2 tst-tls3 tst-tls4 tst-tls5 tst-tls6 tst-tls7	\
 	tst-tls8 tst-tls9 tst-tls10 tst-tls11 tst-tls12 tst-tls13	\
 	tst-tls14 tst-tls15 tst-tls16 tst-tls17 tst-tls18 tst-tls-at-ctor \
-	tst-tls1-static tst-tls2-static tst-tls9-static
+	tst-tls1-static tst-tls2-static tst-tls9-static \
+	tst-tls1-pie tst-tls2-pie tst-tls3-pie
+
+# PIE builds of the basic TLS tests: the executable itself is ET_DYN, so
+# the dynamic linker has to relocate it and place its TLS block.
+CFLAGS_tst-tls1-pie := -fPIE
+CFLAGS_tst-tls2-pie := -fPIE
+CFLAGS_tst-tls3-pie := -fPIE
+LDFLAGS_tst-tls1-pie := -pie
+LDFLAGS_tst-tls2-pie := -pie
+LDFLAGS_tst-tls3-pie := -pie tst-tlsmod1.so tst-tlsmod4.so
 tlsmod17a-suffixes := 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
 tlsmod18a-suffixes := 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
 CFLAGS_tst-tlsmod1.so := -fPIC -DSHARED -shared
@@ -102,6 +112,7 @@ tst-tlsmod14b.so: tst-tlsmod14a.so
 tst-tlsmod16b.so: tst-tlsmod16a.so
 
 tst-tls3: tst-tlsmod1.so tst-tlsmod4.so
+tst-tls3-pie: tst-tlsmod1.so tst-tlsmod4.so
 tst-tls4: tst-tlsmod2.so
 tst-tls5: tst-tlsmod2.so
 tst-tls6: tst-tlsmod2.so

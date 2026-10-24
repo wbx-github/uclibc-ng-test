@@ -2,10 +2,11 @@
 #
 # What of the test suite does not run against a given C library.
 #
-#   CC=<compiler> CFLAGS=<flags> TARGET_ARCH=<arch> get_disabled_tests.py
+#   CC=<compiler> CFLAGS=<flags> LDFLAGS=<flags> TARGET_ARCH=<arch> \
+#       get_disabled_tests.py
 #
-# test/Makefile calls it with its own CC, CFLAGS and TARGET_ARCH; it prints
-# make variables for test/Makefile and test/Test.mak:
+# test/Makefile calls it with its own CC, CFLAGS, LDFLAGS and TARGET_ARCH;
+# it prints make variables for test/Makefile and test/Test.mak:
 #
 #   NO_TLS=1 NO_DL=1 ...                  whole directories (test/Makefile)
 #   DISABLED_TESTS=nptl/tst-foo,misc/bar  single tests, dir/name, comma
@@ -45,6 +46,18 @@ def macros():
         if len(f) >= 2 and f[0] == "#define":
             m[f[1]] = f[2] if len(f) > 2 else ""
     return m
+
+def links_pie():
+    """Whether toolchain and libc can link a PIE: a PIC Scrt1.o and a linker
+    that produces ET_DYN executables."""
+    cc = shlex.split(os.environ.get("CC", "gcc"))
+    flags = (shlex.split(os.environ.get("CFLAGS", ""))
+             + shlex.split(os.environ.get("LDFLAGS", "")))
+    r = subprocess.run(cc + flags + ["-fPIE", "-pie", "-x", "c", "-",
+                                     "-o", os.devnull],
+                       input="int main(void){return 0;}\n",
+                       capture_output=True, text=True)
+    return r.returncode == 0
 
 defined = macros()
 
@@ -93,6 +106,11 @@ if uclibc:
     if is_set("UCLIBC_HAS_LINUXTHREADS"):
         no.update(["NO_NPTL", "NO_TLS"])
 
+# The *-pie variants, wherever a PIE cannot be linked (microblaze: non-PIC
+# Scrt1.o plus a BFD assertion on the attempt).
+if not links_pie():
+    no.add("NO_PIE")
+
 # Both from openadk's package/uclibc-ng-test/Makefile, which sets them
 # without a reason; taken over so that it need not set them itself.
 if libc == "glibc":
@@ -108,11 +126,12 @@ if libc == "musl":
 # do with TLS at all.
 if "NO_DL" in no:
     disable("nptl/tst-tls3", "nptl/tst-tls4", "nptl/tst-atfork2",
-            "dlopen/test3")
+            "nptl/tst-cancelx4-pie", "dlopen/test3")
     disable(*["tls/" + t for t in (
         "tst-tls3", "tst-tls4", "tst-tls5", "tst-tls6", "tst-tls7", "tst-tls8",
         "tst-tls9", "tst-tls10", "tst-tls11", "tst-tls12", "tst-tls13",
-        "tst-tls14", "tst-tls15", "tst-tls17", "tst-tls18", "tst-tls-at-ctor")])
+        "tst-tls14", "tst-tls15", "tst-tls17", "tst-tls18", "tst-tls-at-ctor",
+        "tst-tls1-pie", "tst-tls2-pie", "tst-tls3-pie")])
 
 # Moved here from the Makefile.in of each directory.  Those that asked a
 # uClibc-ng option never fired as meant: the test suite does not read the
