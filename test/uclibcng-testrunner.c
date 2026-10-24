@@ -230,6 +230,31 @@ split(const char *s, char **w, int max, char *buf, size_t bufsz,
 	return n;
 }
 
+/* ------------------------------------------------------------ noMMU memory */
+
+/* Without an MMU a program is loaded into one contiguous block, and the
+   kernel cannot compact memory to make one.  Over a run the page cache fills
+   the gaps until a load fails part way through ("page allocation failure:
+   order:6" on h8300 with 11 MB).  So drop the clean page cache before each
+   test -- 1 only, 3 would drop dentries and inodes too and make the next path
+   lookup allocate.  Written directly: an exec of busybox is what this runner
+   exists to avoid. */
+static void
+drop_page_cache(void)
+{
+#if defined(__UCLIBC__) && !defined(__ARCH_USE_MMU__)
+	int fd;
+
+	sync();
+	fd = open("/proc/sys/vm/drop_caches", O_WRONLY);
+	if (fd >= 0) {
+		if (write(fd, "1", 1) < 0)
+			;	/* no /proc or no permission: run without */
+		close(fd);
+	}
+#endif
+}
+
 /* ------------------------------------------------------------------- a run */
 
 /* Runs one test and returns the status the shell would have reported in $?,
@@ -489,8 +514,9 @@ run_suite(const char *infile)
 		snprintf(outfile, sizeof outfile, "%s.out", binary);
 		nw = split(rest, w, MAXWORDS, wordbuf, sizeof wordbuf, subcwd);
 
-		/* CLOCK_MONOTONIC, not the wall clock: some tests set
-		   the system time */
+		drop_page_cache();
+		/* CLOCK_MONOTONIC, not the wall clock: stat-time64 and
+		   tst-msgctl set the system time */
 		clock_gettime(CLOCK_MONOTONIC, &t0);
 		ret = nw < 0 ? -1 : run_one(w, nw, outfile, environ);
 		clock_gettime(CLOCK_MONOTONIC, &t1);
