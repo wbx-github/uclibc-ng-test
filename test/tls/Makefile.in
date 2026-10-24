@@ -139,10 +139,6 @@ tst-tlsmod18a%.so: tst-tlsmod18a.c
 	$(LDFLAGS_tst-tlsmod18a.so)
 tst-tls-at-ctor: tst-tlsmod-at-ctor.so
 
-ifeq ($(TARGET_ARCH),mips)
-RET_tst-tls15 := 1
-endif
-
 # TIMEOUTFACTOR as in test/nptl: tst-tls13 does 1000 dlopen rounds against a
 # TIMEOUT of 50, which an emulated target loses at random.
 WRAPPER := env LD_LIBRARY_PATH="$$PWD:.:$(LD_LIBRARY_PATH)" TIMEOUTFACTOR=10

@@ -46,7 +46,7 @@
 	  "bl __tls_get_addr@plt\n\t"			\
 	  "addi %0,3," #x "@dtprel"			\
 	  : "=r" (__result) :				\
-	  : __TLS_CALL_CLOBBERS);			\
+	  : "3", __TLS_CALL_CLOBBERS);			\
      __result; })
 #else
 # define TLS_LD(x)					\
@@ -57,7 +57,7 @@
 	  "bl __tls_get_addr@plt\n\t"			\
 	  "addi %0,3," #x "@dtprel"			\
 	  : "=r" (__result) :				\
-	  : __TLS_CALL_CLOBBERS);			\
+	  : "3", __TLS_CALL_CLOBBERS);			\
      __result; })
 #endif
 
@@ -71,7 +71,7 @@
 	  "addi 3,3,_GLOBAL_OFFSET_TABLE_-1b@l\n\t"	\
 	  "addi 3,3," #x "@got@tlsgd\n\t"		\
 	  "bl __tls_get_addr@plt"			\
-	  : :						\
+	  : "=r" (__result) :				\
 	  : __TLS_CALL_CLOBBERS);			\
      __result; })
 #else
@@ -81,7 +81,7 @@
 	  "mflr 3\n\t"					\
 	  "addi 3,3," #x "@got@tlsgd\n\t"		\
 	  "bl __tls_get_addr@plt"			\
-	  : :						\
+	  : "=r" (__result) :				\
 	  : __TLS_CALL_CLOBBERS);			\
      __result; })
 #endif

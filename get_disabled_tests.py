@@ -211,6 +211,19 @@ if arch("or1k"):
 if arch("h8300"):
     disable("string/stratcliff")
 
+# kvx: binutils keeps one "GOT entry initialised" mark per symbol, not per
+# TLS model (bfd/elfnn-kvx.c, symbol_got_offset_mark).  When a symbol is
+# reached through IE first and GD or LD later in the same link, the GD/LD
+# entry is reserved but never written -- no DTPMOD/DTPOFF, module 0 --
+# so __tls_get_addr returns NULL.  tst-tls1..3 mix the models on purpose.
+# Measured 2026-10-21 with binutils 2.46 / kvx gcc 9.4.1: IE then GD on one
+# variable links to a lone R_KVX_64_TPOFF, GD alone to DTPMOD + DTPOFF.
+# The -static builds hit it the same way (2026-10-22: segfault at the
+# first LD access after IE).  Off until the linker is fixed.
+if arch("kvx"):
+    disable("tls/tst-tls1", "tls/tst-tls1-pie", "tls/tst-tls1-static",
+            "tls/tst-tls2", "tls/tst-tls2-pie", "tls/tst-tls2-static",
+            "tls/tst-tls3", "tls/tst-tls3-pie")
 
 out = [n + "=1" for n in sorted(no)]
 if tests:
