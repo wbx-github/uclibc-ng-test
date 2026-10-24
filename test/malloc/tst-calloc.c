@@ -16,6 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <features.h>
 #include <errno.h>
 #include <limits.h>
 #include <malloc.h>
@@ -109,6 +110,10 @@ null_test (void)
 int
 main (void)
 {
+#if defined __arm__ && defined __UCLIBC__ && !defined __MALLOC_STANDARD__
+  /* Kept arm-only, as the makefile had it. */
+  return 23;			/* SKIP */
+#endif
   /* We are allocating blocks with `calloc' and check whether every
      block is completely cleared.  We first try this for some fixed
      times and then with random size.  */

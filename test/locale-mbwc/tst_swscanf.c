@@ -2,6 +2,22 @@
   SWSCANF: int swscanf (const wchar_t *ws, const wchar_t *fmt, ...);
 */
 
+#include <features.h>
+
+#if defined __UCLIBC__ && !defined __UCLIBC_HAS_FLOATS__
+
+/* The data set converts floating point formats, and main() comes from
+   tsp_common.c, so the whole file has to go behind the guard. */
+#include <stdio.h>
+int
+main (void)
+{
+  puts ("needs UCLIBC_HAS_FLOATS");
+  return 23;			/* SKIP */
+}
+
+#else
+
 #define TST_FUNCTION swscanf
 
 #include "tsp_common.c"
@@ -135,3 +151,5 @@ tst_swscanf (FILE * fp, int debug_flg)
 
   return err_count;
 }
+
+#endif

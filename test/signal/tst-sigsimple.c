@@ -16,6 +16,22 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <features.h>
+
+#if defined __UCLIBC__ && !defined __UCLIBC_HAS_OBSOLETE_BSD_SIGNAL__
+
+/* signal.h declares sighold() and sigrelse() only with that option, so the
+   body does not compile without it. */
+#include <stdio.h>
+int
+main (void)
+{
+  puts ("needs UCLIBC_HAS_OBSOLETE_BSD_SIGNAL");
+  return 23;			/* SKIP */
+}
+
+#else
+
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
@@ -54,3 +70,5 @@ do_test (void)
 
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"
+
+#endif

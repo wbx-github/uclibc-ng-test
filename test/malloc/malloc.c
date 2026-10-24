@@ -1,4 +1,5 @@
 
+#include <features.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +17,11 @@ int test2(void);
 
 int main(int argc, char *argv[])
 {
+#if defined __arm__ && defined __UCLIBC__ && !defined __MALLOC_STANDARD__
+	/* Kept arm-only, as the makefile had it: elsewhere this passes without
+	   MALLOC_STANDARD and skipping it would lose coverage. */
+	return 23;			/* SKIP */
+#endif
 	return test1() + test2();
 }
 

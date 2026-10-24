@@ -1,6 +1,22 @@
+#include <features.h>
+
+#if defined __UCLIBC__ \
+    && (!defined __UCLIBC_HAS_WCHAR__ || !defined __UCLIBC_HAS_LOCALE__)
+
+/* wchar.h is not installed without UCLIBC_HAS_WCHAR, so the body cannot even
+   be parsed there -- guarding only main's return would not compile. */
+#include <stdio.h>
+int
+main (void)
+{
+  puts ("needs UCLIBC_HAS_WCHAR and UCLIBC_HAS_LOCALE");
+  return 23;			/* SKIP */
+}
+
+#else
+
 #include <stdio.h>
 #include <time.h>
-#include <features.h>
 #include <wchar.h>
 #include <locale.h>
 
@@ -63,3 +79,5 @@ main (void)
   }
   return result;
 }
+
+#endif

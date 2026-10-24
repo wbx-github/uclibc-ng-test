@@ -2,6 +2,22 @@
   WCSTOD: double wcstod (wchar_t *np, const wchar_t **endp);
 */
 
+#include <features.h>
+
+#if defined __UCLIBC__ && !defined __UCLIBC_HAS_FLOATS__
+
+/* wchar.h declares wcstod() only with that option, and main() comes from
+   tsp_common.c, so the whole file has to go behind the guard. */
+#include <stdio.h>
+int
+main (void)
+{
+  puts ("needs UCLIBC_HAS_FLOATS");
+  return 23;			/* SKIP */
+}
+
+#else
+
 #define TST_FUNCTION wcstod
 
 #include "tsp_common.c"
@@ -67,3 +83,5 @@ tst_wcstod (FILE * fp, int debug_flg)
 
   return err_count;
 }
+
+#endif

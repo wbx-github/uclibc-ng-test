@@ -130,7 +130,7 @@ main (void)
 #else
 int main(void)
 {
-	puts("Test requires WCHAR support; skipping");
-	return 0;
+	puts("needs UCLIBC_HAS_XLOCALE");
+	return 23;			/* SKIP */
 }
 #endif

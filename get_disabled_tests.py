@@ -126,7 +126,7 @@ if libc == "musl":
 # do with TLS at all.
 if "NO_DL" in no:
     disable("nptl/tst-tls3", "nptl/tst-tls4", "nptl/tst-atfork2",
-            "nptl/tst-cancelx4-pie", "dlopen/test3")
+            "nptl/tst-cancelx4-pie")
     disable(*["tls/" + t for t in (
         "tst-tls3", "tst-tls4", "tst-tls5", "tst-tls6", "tst-tls7", "tst-tls8",
         "tst-tls9", "tst-tls10", "tst-tls11", "tst-tls12", "tst-tls13",
@@ -136,29 +136,15 @@ if "NO_DL" in no:
 # Moved here from the Makefile.in of each directory.  Those that asked a
 # uClibc-ng option never fired as meant: the test suite does not read the
 # .config, so the variable was always empty.  Here the option is known.
+# Most such tests ask features.h themselves and report SKIP; these cannot:
+# getrpcent_r and arc4random no longer exist in uClibc-ng at all.
 if uclibc:
-    if not is_set("UCLIBC_HAS_FLOATS"):
-        disable("locale-mbwc/tst_swscanf", "locale-mbwc/tst_wcstod")
-    if not is_set("MALLOC_STANDARD"):
-        disable("malloc/tst-asprintf")
-        if arch("arm"):
-            disable("malloc/malloc", "malloc/tst-calloc")
-    if not is_set("UCLIBC_HAS_OBSOLETE_BSD_SIGNAL"):
-        disable("signal/tst-sigsimple")
     if not is_set("UCLIBC_HAS_REENTRANT_RPC"):
         disable("rpc/getrpcent_r")
-    if not is_set("UCLIBC_HAS_XLOCALE"):
-        disable("time/tst-ftime_l")
-    if not (is_set("UCLIBC_HAS_WCHAR") and is_set("UCLIBC_HAS_LOCALE")):
-        disable("time/tst_wcsftime")
-    if not is_set("UCLIBC_HAS_PTY"):
-        disable("stdlib/ptytest")
     if not is_set("UCLIBC_HAS_ARC4RANDOM"):
         disable("stdlib/testarc4random")
     if not is_set("UCLIBC_HAS_GLIBC_CUSTOM_STREAMS"):
         disable("stdio/tst-fmemopen")
-    if not is_set("UCLIBC_HAS_LFS"):
-        disable("stat/stat64")
 
 # Off everywhere, word for word from the Makefile.in, each with the reason
 # given there, if any.
