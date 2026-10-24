@@ -67,7 +67,7 @@ gen:
 	$(MAKE) run UCLIBCNG_GENERATE_TESTRUNNER=1
 
 # The runner, built for the target with the same CC and flags as the tests.
-# "make install" leaves out *.[ochm], so the binary goes into the rootfs and
+# "make install" leaves out *.[ochmd], so the binary goes into the rootfs and
 # its source does not.
 uclibcng-testrunner: uclibcng-testrunner.c
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $< $(LDFLAGS) $(EXTRA_LDFLAGS)

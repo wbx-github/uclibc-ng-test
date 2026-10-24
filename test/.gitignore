@@ -6,6 +6,7 @@
 # Generated files
 #
 *.out
+*.d
 #
 # The runner, built from uclibcng-testrunner.c
 #
