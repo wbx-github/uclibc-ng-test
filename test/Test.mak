@@ -114,12 +114,18 @@ MAKE_SRCS := $(wildcard Makefile.in) $(TESTDIR)Makefile $(TESTDIR)Rules.mak $(TE
 
 # Rebuild a test when the C library it links against changes; otherwise an
 # incremental build keeps a stale (statically linked) copy of libc.
+#
+# gcc writes the .d file as it goes, and "make all" runs the gen pass, which
+# includes every *.d below, in parallel with the compile pass.  So the file
+# is written under another name and renamed when complete: a reader sees the
+# old file or the whole new one, never half of one ("missing separator").
 SYSROOT  := $(patsubst --sysroot=%,%,$(firstword $(filter --sysroot=%,$(CFLAGS) $(LDFLAGS))))
 LIBC_DEP := $(wildcard $(addsuffix /usr/lib/libc.a,$(SYSROOT)))
 
 $(TARGETS): $(TARGET_SRCS) $(MAKE_SRCS) $(LIBC_DEP)
 	$(showlink)
-	$(Q)$(CC) $(filter-out $(CFLAGS-OMIT-$@),$(CFLAGS)) $(EXTRA_CFLAGS) $(CFLAGS_$(notdir $(CURDIR))) $(CFLAGS_$@) -MD -MP -MT $@ -MF $@.d -c $@.c -o $@.o
+	$(Q)$(CC) $(filter-out $(CFLAGS-OMIT-$@),$(CFLAGS)) $(EXTRA_CFLAGS) $(CFLAGS_$(notdir $(CURDIR))) $(CFLAGS_$@) -MD -MP -MT $@ -MF $@.d.tmp -c $@.c -o $@.o
+	$(Q)mv -f $@.d.tmp $@.d
 	$(Q)$(CC) $(filter-out $(LDFLAGS-OMIT-$@),$(LDFLAGS)) $@.o -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS_$@)
 
 # -O2 twins: same source, same per-test flags (looked up via the base
@@ -128,7 +134,8 @@ $(TARGETS): $(TARGET_SRCS) $(MAKE_SRCS) $(LIBC_DEP)
 # modules etc.) without duplicating them here.
 $(O2_TWIN_TARGETS): %-O2: %.c % $(MAKE_SRCS) $(LIBC_DEP)
 	$(showlink)
-	$(Q)$(CC) $(filter-out $(CFLAGS-OMIT-$*),$(CFLAGS)) $(EXTRA_CFLAGS) -O2 $(CFLAGS_$(notdir $(CURDIR))) $(CFLAGS_$*) -MD -MP -MT $@ -MF $@.d -c $*.c -o $@.o
+	$(Q)$(CC) $(filter-out $(CFLAGS-OMIT-$*),$(CFLAGS)) $(EXTRA_CFLAGS) -O2 $(CFLAGS_$(notdir $(CURDIR))) $(CFLAGS_$*) -MD -MP -MT $@ -MF $@.d.tmp -c $*.c -o $@.o
+	$(Q)mv -f $@.d.tmp $@.d
 	$(Q)$(CC) $(filter-out $(LDFLAGS-OMIT-$*),$(LDFLAGS)) $@.o -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS_$*)
 
 %.so: %.c
@@ -142,7 +149,7 @@ $(O2_TWIN_TARGETS): %-O2: %.c % $(MAKE_SRCS) $(LIBC_DEP)
 
 clean:
 	$(showclean)
-	$(Q)$(RM) *.a *.o *.d *.so *~ core *.out *.gdb $(CLEAN_TARGETS) $(EXTRA_CLEAN)
+	$(Q)$(RM) *.a *.o *.d *.d.tmp *.so *~ core *.out *.gdb $(CLEAN_TARGETS) $(EXTRA_CLEAN)
 	$(Q)$(RM_R) $(EXTRA_DIRS)
 
 # Auto-generated header dependencies (see -MD above).
