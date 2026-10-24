@@ -132,13 +132,13 @@ create_temp_file (const char *base, char **filename)
   return _fd;
 }
 
-/* Timeout handler.  We kill the child and exit with an error.  */
-static void
-__attribute__ ((noreturn))
-signal_handler (int sig __attribute__ ((unused)))
+/* Kill the test process and reap it.  Stores the wait status and returns
+   the waitpid() result: 0 if it never died, -1 with errno == ECHILD when it
+   had already been reaped.  Shared by both handlers below.  */
+static int
+kill_child (int *status)
 {
   int killed = 0;
-  int status;
   int i;
 
   assert (pid > 1);
@@ -153,7 +153,7 @@ signal_handler (int sig __attribute__ ((unused)))
 #ifdef __UCLIBC_HAS_REALTIME__
       struct timespec ts;
 #endif
-      killed = waitpid (pid, &status, WNOHANG|WUNTRACED);
+      killed = waitpid (pid, status, WNOHANG|WUNTRACED);
       if (killed != 0)
 	break;
 
@@ -170,6 +170,51 @@ signal_handler (int sig __attribute__ ((unused)))
 	  sleep(1);
 #endif
     }
+  return killed;
+}
+
+/* Interrupt handler.  The run was cancelled from the outside, so the test
+   neither passed nor failed -- die the way we were asked to instead of
+   reporting a timeout.  */
+static void
+interrupt_handler (int sig)
+{
+  int status;
+  sigset_t unblock;
+
+  if (kill_child (&status) == -1 && errno == ECHILD)
+    return;
+
+#ifdef CLEANUP_HANDLER
+  CLEANUP_HANDLER;
+#endif
+
+  /* signal() leaves sig blocked for the duration of the handler (no
+     SA_NODEFER), so raise() alone would only mark it pending and the
+     handler would run on to exit().  */
+  signal (sig, SIG_DFL);
+  sigemptyset (&unblock);
+  sigaddset (&unblock, sig);
+  sigprocmask (SIG_UNBLOCK, &unblock, NULL);
+  raise (sig);
+
+  _exit (128 + sig);
+}
+
+/* Timeout handler.  We kill the child and exit with an error.  Returns
+   only when the alarm turns out to be stale, see below.  */
+static void
+signal_handler (int sig __attribute__ ((unused)))
+{
+  int status;
+  int killed = kill_child (&status);
+
+  if (killed == -1 && errno == ECHILD)
+    /* Stale alarm: the child was already reaped and we are running
+       inside the parent's exit path.  Calling exit() again from here
+       would re-run the atexit handlers and the stdio cleanup.  */
+    return;
+
   if (killed != 0 && killed != pid)
     {
       perror ("Failed to kill test process");
@@ -179,12 +224,6 @@ signal_handler (int sig __attribute__ ((unused)))
 #ifdef CLEANUP_HANDLER
   CLEANUP_HANDLER;
 #endif
-
-  if (sig == SIGINT)
-    {
-      signal (sig, SIG_DFL);
-      raise (sig);
-    }
 
   /* If we expected this signal: good!  */
 #ifdef EXPECTED_SIGNAL
@@ -393,17 +432,19 @@ main (int argc, char *argv[], char *envp[])
 
   /* Set timeout.  */
 #ifndef TIMEOUT
-  /* Default timeout is two seconds.  */
-# define TIMEOUT 2
+  /* Default timeout is four seconds; two was too thin for targets
+     running under emulation.  glibc, where this comes from, uses 20.  */
+# define TIMEOUT 4
 #endif
   signal (SIGALRM, signal_handler);
   alarm (TIMEOUT * timeoutfactor);
 
   /* Make sure we clean up if the wrapper gets interrupted.  */
-  signal (SIGINT, signal_handler);
+  signal (SIGINT, interrupt_handler);
 
   /* Wait for the regular termination.  */
   termpid = TEMP_FAILURE_RETRY (waitpid (pid, &status, 0));
+  alarm (0);
   if (termpid == -1)
     {
       printf ("Waiting for test program failed: %s\n", strerror(errno));
