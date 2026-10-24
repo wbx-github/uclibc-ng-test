@@ -49,6 +49,14 @@ while read expected_ret tst_src_name binary_name subdir cmd; do
 	for x in $binary_name.out $test_src_name.out -; do
 		if test x"$x" = x"-"; then
 			echo "PASS $binary_name"
+			# A test that passes may still have left something
+			# unchecked and said so.  Its output otherwise goes
+			# nowhere -- only the failure branches print the .out
+			# file -- so the one kind of line that has to survive
+			# a pass is surfaced here.  No -a: busybox grep in the
+			# guest does not have it, and these are text files.
+			grep -e '^SKIP' -e 'skipped' "$subdir/$binary_name.out" \
+				| sed 's/^/	/'
 			npass=`expr $npass + 1`
 			break
 		fi
