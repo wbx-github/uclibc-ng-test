@@ -3,8 +3,5 @@
 
 DODIFF_64bit := 1
 
-ifeq ($(UCLIBC_HAS_GLIBC_CUSTOM_STREAMS),)
-TESTS_DISABLED += tst-fmemopen
-endif
-
-TESTS_DISABLED += printf_fp
+# printf_fp.c is the body printf_efg.c and printf_a.c include, it has no main.
+TESTS := $(filter-out printf_fp,$(patsubst %.c,%,$(wildcard *.c)))

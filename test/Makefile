@@ -5,6 +5,21 @@ top_srcdir=../
 top_builddir=../
 include Rules.mak
 
+# What does not run against this C library.  get_disabled_tests.py asks the
+# compiler and prints NO_*=1 and DISABLED_TESTS=dir/test,...; whatever is
+# given on the command line or in the environment wins.  ALL_TESTS=1 runs
+# everything.
+PYTHON ?= python3
+ifneq ($(ALL_TESTS),1)
+DISABLE_VARS := $(shell CC='$(CC)' CFLAGS='$(CFLAGS)' TARGET_ARCH='$(TARGET_ARCH)' $(PYTHON) $(top_srcdir)get_disabled_tests.py)
+ifneq ($(.SHELLSTATUS),0)
+$(error get_disabled_tests.py failed)
+endif
+$(info disabled by get_disabled_tests.py: $(DISABLE_VARS))
+$(foreach v,$(DISABLE_VARS),$(if $(filter undefined,$(origin $(firstword $(subst =, ,$(v))))),$(eval $(v))))
+export DISABLED_TESTS
+endif
+
 ALL_SUBDIRS := $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
 DIRS := $(ALL_SUBDIRS)

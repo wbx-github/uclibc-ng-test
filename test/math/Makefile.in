@@ -1,15 +1,14 @@
 # uClibc-ng math tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
-# libm-test.c is a generated file used by the tests internally so skip it
-TESTS_DISABLED := libm-test
+# libm-test.c is generated and included by test-double.c and friends, not a
+# program of its own.
+TESTS := $(filter-out libm-test,$(patsubst %.c,%,$(wildcard *.c)))
 
-# gamma (removed from TESTS, need to add "small errors are ok" machinery there)
-TESTS_DISABLED += gamma
-ifeq ($(UCLIBC_HAS_LONG_DOUBLE_MATH),)
-TESTS_DISABLED += test-ldouble test-ildoubl compile_test c99_test
+# The suite does not read uClibc-ng's .config, so this used to sit behind an
+# always-empty UCLIBC_HAS_LONG_DOUBLE_MATH; basic-test has always been built
+# without its long double part.
 CFLAGS_basic-test := -DNO_LONG_DOUBLE
-endif
 
 DODIFF_rint     := 1
 DODIFF_signgam  := 1

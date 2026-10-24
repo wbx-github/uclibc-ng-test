@@ -1,20 +1,8 @@
 # uClibc-ng unistd tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
-TESTS_DISABLED :=
-
-ifeq ($(TARGET_ARCH),avr32)
-TESTS_DISABLED += tst-fallocate tst-posix_fallocate tst-fallocate64
-endif
-
-ifeq ($(TARGET_ARCH),or1k)
-TESTS_DISABLED += tst-pselect
-endif
-
 OPTS_getopt      := -abcXXX -9
 OPTS_getopt_long := --add XXX --delete YYY --verbose
 # assume UCLIBC_HAS_GNU_GETOPT is enabled
 OPTS_tstgetopt   := -a -b -cfoobar --required foobar --optional=bazbug --none random --col --color --colour
 
-# for embedded systems 4 GB disk space is not available
-TESTS_DISABLED += tst-posix_fallocate64 tst-fallocate64
