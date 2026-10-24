@@ -1,6 +1,13 @@
 # uClibc-ng NPTL tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
+# build every test additionally at -O2 (see Test.mak)
+O2_TWINS := 1
+
+# These three are a pthread_create and then a wait for the alarm that ends
+# them; there is no code for -O2 to compile differently.
+TESTS_NO_O2 := tst-exit2 tst-exit3 tst-stdio1
+
 TESTS := tst-align tst-align2 tst-atfork1 tst-attr1 tst-attr2 tst-attr3	\
 	tst-barrier1 tst-barrier2 tst-barrier3 tst-barrier4 tst-basic1	\
 	tst-basic2 tst-basic3 tst-basic4 tst-basic5 tst-basic6		\

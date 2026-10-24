@@ -23,13 +23,23 @@ ifeq ($(NO_PIE),1)
 TESTS := $(filter-out %-pie,$(TESTS))
 endif
 
+# gcc-torture-style: build every test a second time at -O2.  The suite
+# default is no -O flag, so each test runs once at -O0 and once at -O2 --
+# different optimization levels exercise different codegen in the tests
+# (inline asm, gcc builtins/header inlines, unwind tables; see the
+# tls-macros-i386.h ebx clobber, invisible at -O0).  Directories opt in
+# with O2_TWINS := 1; individual tests opt out via TESTS_NO_O2.
+ifeq ($(O2_TWINS),1)
+O2_TWIN_TARGETS := $(addsuffix -O2,$(filter-out %_glibc $(TESTS_NO_O2),$(TESTS)))
+endif
+
 TARGETS := $(TESTS)
 
-CLEAN_TARGETS := $(TARGETS)
+CLEAN_TARGETS := $(TARGETS) $(O2_TWIN_TARGETS)
 CLEAN_TARGETS += $(TESTS_DISABLED)
-COMPILE_TARGETS :=  $(TARGETS)
+COMPILE_TARGETS :=  $(TARGETS) $(O2_TWIN_TARGETS)
 # We sort the targets so uClibc and host-libc tests are run adjacent
-RUN_TARGETS := $(sort $(addsuffix .exe,$(TARGETS)))
+RUN_TARGETS := $(sort $(addsuffix .exe,$(TARGETS) $(O2_TWIN_TARGETS)))
 COMPILE_TARGETS :=  $(sort $(COMPILE_TARGETS))
 # provide build rules even for disabled tests:
 TARGETS += $(TESTS_DISABLED)
@@ -42,7 +52,7 @@ define binary_name
 $(patsubst %.exe,%,$@)
 endef
 define tst_src_name
-$(patsubst %_glibc,%,$(binary_name))
+$(patsubst %_glibc,%,$(patsubst %-O2,%,$(binary_name)))
 endef
 
 define diff_test
@@ -111,6 +121,15 @@ $(TARGETS): $(TARGET_SRCS) $(MAKE_SRCS) $(LIBC_DEP)
 	$(showlink)
 	$(Q)$(CC) $(filter-out $(CFLAGS-OMIT-$@),$(CFLAGS)) $(EXTRA_CFLAGS) $(CFLAGS_$(notdir $(CURDIR))) $(CFLAGS_$@) -MD -MP -MT $@ -MF $@.d -c $@.c -o $@.o
 	$(Q)$(CC) $(filter-out $(LDFLAGS-OMIT-$@),$(LDFLAGS)) $@.o -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS_$@)
+
+# -O2 twins: same source, same per-test flags (looked up via the base
+# name $*), -O2 inserted before them so an explicit per-test -O wins.
+# Depending on the base test inherits its extra prerequisites (helper
+# modules etc.) without duplicating them here.
+$(O2_TWIN_TARGETS): %-O2: %.c % $(MAKE_SRCS) $(LIBC_DEP)
+	$(showlink)
+	$(Q)$(CC) $(filter-out $(CFLAGS-OMIT-$*),$(CFLAGS)) $(EXTRA_CFLAGS) -O2 $(CFLAGS_$(notdir $(CURDIR))) $(CFLAGS_$*) -MD -MP -MT $@ -MF $@.d -c $*.c -o $@.o
+	$(Q)$(CC) $(filter-out $(LDFLAGS-OMIT-$*),$(LDFLAGS)) $@.o -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS_$*)
 
 %.so: %.c
 	$(showlink)

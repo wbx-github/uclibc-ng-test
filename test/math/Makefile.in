@@ -1,6 +1,9 @@
 # uClibc-ng math tests
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
+# build every test additionally at -O2 (see Test.mak)
+O2_TWINS := 1
+
 # libm-test.c is generated and included by test-double.c and friends, not a
 # program of its own.
 TESTS := $(filter-out libm-test,$(patsubst %.c,%,$(wildcard *.c)))
