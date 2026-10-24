@@ -118,5 +118,8 @@ do_test (void)
   return 0;
 }
 
+/* Two 200ms timedjoin windows plus thread startup; the default is too
+   tight under emulation.  */
+#define TIMEOUT 20
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"

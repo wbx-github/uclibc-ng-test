@@ -62,4 +62,6 @@ do_test (void)
 #endif
 
 #define TEST_FUNCTION do_test ()
+/* forks in a signal loop; the default is not enough under emulation */
+#define TIMEOUT 10
 #include "../test-skeleton.c"

@@ -51,6 +51,9 @@ do_test (void)
 }
 
 
+/* The alarm is the result here, not a safety margin: the setup is one
+   pthread_create and then the join must not return. */
+#define TIMEOUT 1
 #define EXPECTED_SIGNAL SIGALRM
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"

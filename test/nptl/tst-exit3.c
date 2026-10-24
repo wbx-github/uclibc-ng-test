@@ -76,6 +76,9 @@ do_test (void)
   return 1;
 }
 
+/* The alarm is the result here, not a safety margin: the setup is two
+   pthread_creates and a barrier, then the process has to stay alive. */
+#define TIMEOUT 1
 #define EXPECTED_SIGNAL SIGALRM
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"

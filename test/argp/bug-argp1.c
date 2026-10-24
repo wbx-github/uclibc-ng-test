@@ -30,4 +30,6 @@ do_test (int argc, char *argv[])
 }
 
 #define TEST_FUNCTION do_test (argc, argv)
+/* the default is not enough under emulation */
+#define TIMEOUT 10
 #include "../test-skeleton.c"

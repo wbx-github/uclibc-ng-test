@@ -35,6 +35,9 @@ do_test (void)
   return 1;
 }
 
+/* The alarm is the result here, not a safety margin: the setup is one
+   pthread_create and then the process has to stay alive. */
+#define TIMEOUT 1
 #define EXPECTED_SIGNAL SIGALRM
 #define TEST_FUNCTION do_test ()
 #include "../test-skeleton.c"
