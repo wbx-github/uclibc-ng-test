@@ -7,6 +7,10 @@
 #
 *.out
 #
+# The runner, built from uclibcng-testrunner.c
+#
+uclibcng-testrunner
+#
 # Executable test
 #
 *_glibc

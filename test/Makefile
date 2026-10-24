@@ -51,9 +51,16 @@ gen:
 	-rm -f $(top_builddir)/test/uclibcng-testrunner.in
 	$(MAKE) run UCLIBCNG_GENERATE_TESTRUNNER=1
 
-compile: subdirs_compile
+# The runner, built for the target with the same CC and flags as the tests.
+# "make install" leaves out *.[ochm], so the binary goes into the rootfs and
+# its source does not.
+uclibcng-testrunner: uclibcng-testrunner.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $< $(LDFLAGS) $(EXTRA_LDFLAGS)
+
+compile: uclibcng-testrunner subdirs_compile
 
 clean: subdirs_clean
+	-rm -f uclibcng-testrunner
 
 subdirs: $(patsubst %, _dir_%, $(DIRS))
 subdirs_compile: $(patsubst %, _dircompile_%, $(DIRS))
