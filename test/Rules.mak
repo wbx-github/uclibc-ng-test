@@ -52,6 +52,13 @@ HOST_CFLAGS    += $(XCOMMON_CFLAGS) -Os $(XWARNINGS) -std=gnu99
 #LDFLAGS := $(CPU_LDFLAGS-y) -Wl,-z,now
 #LDFLAGS += -Wl,-rpath,$(shell pwd)
 
+# alpha traps on NaN, infinity and denormals unless the code is compiled with
+# -mieee, so a test that only compares such a value dies of SIGFPE.  uClibc-ng
+# builds itself that way (CPU_CFLAGS-y in its Rules.mak); the tests must match.
+ifeq ($(TARGET_ARCH),alpha)
+CFLAGS += -mieee
+endif
+
 ifneq ($(strip $(UCLIBC_EXTRA_CFLAGS)),"")
 CFLAGS += $(call qstrip,$(UCLIBC_EXTRA_CFLAGS))
 endif
