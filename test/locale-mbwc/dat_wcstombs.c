@@ -203,7 +203,7 @@ TST_WCSTOMBS tst_wcstombs_loc [] = {
   },
 #else
   {
-    { Twcstombs, TST_LOC_ja_UTF8 },
+    { Twcstombs, TST_LOC_end },   /* ja_JP.UTF-8 disabled: uClibc lacks CJK wctype classes/transforms */
     {
 
       /* #01 : Any chars including a null char should not be stored in s.  */

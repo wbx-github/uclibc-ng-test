@@ -66,7 +66,6 @@ locale/bug-usesetlocale
 locale/C
 locale/collate-test
 locale/dump-ctype
-locale/gen-unicode-ctype
 locale/show-ucs-data
 locale/tst-digits
 locale/tst-langinfo

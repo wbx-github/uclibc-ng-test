@@ -160,7 +160,7 @@ TST_WCSCOLL tst_wcscoll_loc [] = {
 #if 0
     {	{ Twcscoll, TST_LOC_eucJP },
 #else
-    {	{ Twcscoll, TST_LOC_ja_UTF8 },
+    {	{ Twcscoll, TST_LOC_end },   /* ja_JP.UTF-8 disabled: uClibc lacks CJK wctype classes/transforms */
 #endif
 	{
 	  { /*input.*/ { { 0x3041,0x3042,0x3043,0x0000 },

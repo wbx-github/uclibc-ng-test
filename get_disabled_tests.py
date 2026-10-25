@@ -148,7 +148,7 @@ if uclibc:
 
 # Off everywhere, word for word from the Makefile.in, each with the reason
 # given there, if any.
-disable("locale/tst-ctype", "locale/tst-fmon", "locale/tst-leaks",
+disable("locale/tst-ctype", "locale/tst-fmon",
         "locale/tst-rpmatch", "locale/tst-strfmon1")   # known not to build
 disable("locale/bug-usesetlocale", "locale/tst-xlocale1",
         "locale/tst-xlocale2", "locale/xfrm-test",
@@ -177,6 +177,20 @@ disable("tls/tst-tls1-static", "tls/tst-tls2-static", "tls/tst-tls9-static",
         "tls/tst-tls16")
 # fallocate64: 4 GB of disk space are not available on embedded systems
 disable("unistd/tst-posix_fallocate64", "unistd/tst-fallocate64")
+
+# Need files the rootfs does not carry.  collate-test takes a random seed
+# and a word list on stdin and is judged against a reference output;
+# tst-digits and tst-trans need glibc's test locales "test7" and "test",
+# which glibc compiles with localedef -- uClibc-ng has no localedef, its
+# locale data is built into the library.
+disable("locale/collate-test", "locale/tst-digits", "locale/tst-trans")
+
+# glibc extensions, not POSIX: iconv's //TRANSLIT suffix (bug-iconv-trans),
+# the ja_JP character classes jhira, jkata, jdigit, jspace and jkanji
+# (tst-wctype), and scanf's "%I" for locale digits (tst-sscanf).
+if libc != "glibc":
+    disable("locale/bug-iconv-trans", "locale/tst-wctype",
+            "locale/tst-sscanf")
 
 # Per arch, word for word from the Makefile.in; none came with a reason
 # beyond the one noted.

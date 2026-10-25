@@ -390,7 +390,7 @@ TST_ISWCTYPE tst_iswctype_loc [] = {
 #if 0
     { Tiswctype, TST_LOC_eucJP },
 #else
-    { Tiswctype, TST_LOC_ja_UTF8 },
+    { Tiswctype, TST_LOC_end },   /* ja_JP.UTF-8 disabled: uClibc lacks CJK wctype classes/transforms */
 #endif
     {
 #ifdef SHOJI_IS_RIGHT

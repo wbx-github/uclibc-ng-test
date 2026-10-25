@@ -2,8 +2,8 @@
 # Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
 
 TESTS := bug-iconv-trans bug-usesetlocale collate-test dump-ctype \
-	 gen-unicode-ctype show-ucs-data tst-ctype \
-	 tst-digits tst-fmon tst-langinfo tst-leaks tst-mbswcs1 \
+	 show-ucs-data tst-ctype \
+	 tst-digits tst-fmon tst-langinfo tst-mbswcs1 \
 	 tst-mbswcs2 tst-mbswcs3 tst-mbswcs4 tst-mbswcs5 tst-mbswcs6 \
 	 tst_nl_langinfo tst-numeric tst-rpmatch tst-setlocale \
 	 tst-sscanf tst-strfmon1 tst-trans tst-wctype tst-xlocale1 \

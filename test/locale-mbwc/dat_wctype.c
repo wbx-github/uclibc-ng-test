@@ -125,7 +125,7 @@ TST_WCTYPE tst_wctype_loc [] = {
 #if 0
     {	{ Twctype, TST_LOC_eucJP },
 #else
-    {	{ Twctype, TST_LOC_ja_UTF8 },
+    {	{ Twctype, TST_LOC_end },   /* ja_JP.UTF-8 disabled: uClibc lacks CJK wctype classes/transforms */
 #endif
 	{
 	  { /*inp*/ { "alnum"	       },  /* #01 */

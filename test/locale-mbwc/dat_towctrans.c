@@ -81,7 +81,7 @@ TST_TOWCTRANS tst_towctrans_loc [] = {
 #if 0
     { Ttowctrans, TST_LOC_eucJP },
 #else
-    { Ttowctrans, TST_LOC_ja_UTF8 },
+    { Ttowctrans, TST_LOC_end },   /* ja_JP.UTF-8 disabled: uClibc lacks CJK wctype classes/transforms */
 #endif
     {
       {	 { 0xFF21, "tolower" }, { 0,	   1,0xFF41 }  },

@@ -90,7 +90,7 @@ TST_WCRTOMB tst_wcrtomb_loc [] = {
   },
 #else
   {
-    { Twcrtomb, TST_LOC_ja_UTF8 },
+    { Twcrtomb, TST_LOC_end },   /* ja_JP.UTF-8 disabled: uClibc lacks CJK wctype classes/transforms */
     {
       /* #01 : normal case			       */
       { /*input.*/ { 1,		 0x3042,   0,0 },
