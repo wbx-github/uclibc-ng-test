@@ -71,5 +71,18 @@ do_test (void)
   return 0;
 }
 
-#define TEST_FUNCTION do_test ()
+#ifdef __ARCH_USE_MMU__
+# define TEST_FUNCTION do_test ()
+#else
+/* Without an MMU nothing enforces RLIMIT_AS and every anonymous mmap
+   takes real pages: use_up_memory() runs into the OOM killer instead
+   of ENOMEM. */
+static int
+do_skip (void)
+{
+  puts ("SKIP: needs RLIMIT_AS, which a target without an MMU does not enforce");
+  return 0;
+}
+# define TEST_FUNCTION do_skip ()
+#endif
 #include "../test-skeleton.c"

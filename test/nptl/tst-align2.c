@@ -82,5 +82,18 @@ do_test (void)
   return ok ? 0 : 1;
 }
 
-#define TEST_FUNCTION do_test ()
+#ifdef __ARCH_USE_MMU__
+# define TEST_FUNCTION do_test ()
+#else
+/* clone() without CLONE_VM is fork(): without an MMU the child gets an
+   empty mm and goes on running in its parent's memory, which is freed
+   and reused under it once the parent exits. */
+static int
+do_skip (void)
+{
+  puts ("SKIP: clone() without CLONE_VM needs an MMU");
+  return 0;
+}
+# define TEST_FUNCTION do_skip ()
+#endif
 #include "../test-skeleton.c"
