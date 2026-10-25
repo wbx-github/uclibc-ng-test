@@ -611,6 +611,9 @@ init_setup(void)
 	/* shm_open() keeps its objects here, devtmpfs does not have it */
 	mkdir("/dev/shm", 01777);
 	mount("tmpfs", "/dev/shm", "tmpfs", 0, NULL);
+	/* the slaves /dev/ptmx hands out (ptytest) */
+	mkdir("/dev/pts", 0755);
+	mount("devpts", "/dev/pts", "devpts", 0, NULL);
 	/* the rootfs tmpfs defaults to half the RAM; on sh4 that left 1.3 MB
 	   for all .out files */
 	mount("rootfs", "/", NULL, MS_REMOUNT, "size=90%");
