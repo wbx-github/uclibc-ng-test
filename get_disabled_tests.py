@@ -185,8 +185,6 @@ if arch("avr32"):
             "unistd/tst-posix_fallocate", "unistd/tst-fallocate64")
 if arch("bfin") or arch("m68k"):
     disable("misc/tst-rlimit", "misc/tst-rlimit64")
-if arch("arm") or arch("riscv32") or arch("xtensa"):
-    disable("mmap/mmap2")
 if arch("metag"):
     disable("nptl/tst-cleanup0", "nptl/tst-cleanupx0")
 if arch("riscv32"):
