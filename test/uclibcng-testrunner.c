@@ -60,6 +60,11 @@
 #define MAXENV    16
 #define MAXPATHL  1024
 
+/* The buffers sized by these are static, not on the stack: a FLAT binary has
+   a fixed stack with no guard page, OpenADK gives it 8 KB on lm32, and
+   run_suite() alone used to need 29 KB of it.  The runner has one thread and
+   no recursion, so nothing needs them to be local. */
+
 static int opt_color;		/* -c: ANSI colours and a padded subdir column */
 static int opt_runlines;	/* -r: "RUN name" instead of the \r progress   */
 static int is_init;		/* running as PID 1, see init_setup()         */
@@ -113,7 +118,7 @@ cat_indented(const char *path, const char *indent)
 static void
 surface_skips(const char *path)
 {
-	char buf[MAXLINE];
+	static char buf[MAXLINE];
 	FILE *f = fopen(path, "r");
 
 	if (!f)
@@ -140,7 +145,8 @@ surface_skips(const char *path)
 static void
 kernel_log(int show)
 {
-	char buf[8192], *text;
+	static char buf[8192];
+	char *text;
 	ssize_t n;
 
 	if (kmsg_fd < 0)
@@ -387,7 +393,7 @@ same_file(const char *a, const char *b)
 static void
 show_diff(const char *out, const char *good)
 {
-	char lo[MAXLINE], lg[MAXLINE];
+	static char lo[MAXLINE], lg[MAXLINE];
 	FILE *fo = fopen(out, "r"), *fg = fopen(good, "r");
 	int n = 0, shown = 0;
 
@@ -427,8 +433,10 @@ extern char **environ;
 static int
 run_suite(const char *infile)
 {
-	char line[MAXLINE], cwd[MAXPATHL], subcwd[MAXPATHL];
-	char wordbuf[MAXLINE * 2];	/* $PWD makes the result longer */
+	static char line[MAXLINE], cwd[MAXPATHL], subcwd[MAXPATHL];
+	static char wordbuf[MAXLINE * 2];	/* $PWD makes the result longer */
+	static char outfile[MAXPATHL], goodfile[MAXPATHL], outpath[MAXPATHL];
+	static char gpath[MAXPATHL];
 	char *w[MAXWORDS];
 	FILE *in;
 
@@ -443,7 +451,6 @@ run_suite(const char *infile)
 
 	while (fgets(line, sizeof line, in)) {
 		char *p = line, *expected_s, *binary, *subdir, *rest;
-		char outfile[MAXPATHL], goodfile[MAXPATHL], outpath[MAXPATHL];
 		int expected, ret, nw;
 		struct timespec t0, t1;
 		long ms;
@@ -517,7 +524,6 @@ run_suite(const char *infile)
 
 		if (access(goodfile, F_OK) == 0) {
 			int ok = same_file(outfile, goodfile);
-			char gpath[MAXPATHL];
 
 			snprintf(gpath, sizeof gpath, "%s/%s.out.good",
 				 subdir, binary);
