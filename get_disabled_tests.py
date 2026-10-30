@@ -145,6 +145,8 @@ if uclibc:
         disable("stdlib/testarc4random")
     if not is_set("UCLIBC_HAS_GLIBC_CUSTOM_STREAMS"):
         disable("stdio/tst-fmemopen")
+    if not is_set("UCLIBC_SUPPORT_AI_ADDRCONFIG"):
+        disable("inet/tst-ifaddrs")
 
 # Off everywhere, word for word from the Makefile.in, each with the reason
 # given there, if any.
