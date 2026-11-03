@@ -122,7 +122,20 @@
 #include <complex.h>
 #include <math.h>
 #include <float.h>
-#include "fenv.h"
+/* The real header where the port has fenv, and nothing at all where it does
+   not.  There used to be a fenv.h in this directory -- two lines, "until we
+   support fenv", defining feclearexcept away and fetestexcept to zero -- and
+   because the include was quoted it shadowed the real header on every target,
+   including the two configurations that do have fenv.  It defined no FE_*
+   macros either, so every #ifdef FE_INVALID below was dead and the 199
+   exception expectations in this file were checked nowhere at all, while the
+   summary announced hundreds of "tests for exception flags executed".  */
+#ifdef __UCLIBC_HAS_FENV__
+# include <fenv.h>
+#else
+# define feclearexcept(x)	((void) 0)
+# define fetestexcept(x)	(0)
+#endif
 #include <limits.h>
 
 #include <errno.h>
@@ -163,6 +176,7 @@ static int output_ulps;	/* Should ulps printed?  */
 static int noErrors;	/* number of errors */
 static int noTests;	/* number of tests (without testing exceptions) */
 static int noExcTests;	/* number of tests for exception flags */
+static int noExcSkipped;	/* expectations we could not check, no fenv */
 static int noXFails;	/* number of expected failures.  */
 static int noXPasses;	/* number of unexpected passes.  */
 
@@ -442,6 +456,14 @@ test_single_exception (const char *test_name,
 static void
 test_exceptions (const char *test_name, int exception)
 {
+#ifndef __UCLIBC_HAS_FENV__
+  /* Nothing to read the flags with.  Count what was expected, so that the
+     summary says how much of the standard went unchecked instead of implying
+     it was covered.  */
+  if (exception & (INVALID_EXCEPTION | DIVIDE_BY_ZERO_EXCEPTION))
+    ++noExcSkipped;
+  return;
+#endif
   ++noExcTests;
 #ifdef FE_DIVBYZERO
   if ((exception & DIVIDE_BY_ZERO_EXCEPTION_OK) == 0)
@@ -711,245 +733,14 @@ matherr (struct exception *x __attribute__ ((unused)))
   Please keep them alphabetically sorted!
 ****************************************************************************/
 
-static void
-acos_test (void)
-{
-  errno = 0;
-  FUNC(acos) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (acos);
-
-  TEST_f_f (acos, plus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (acos, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (acos, nan_value, nan_value);
-
-  /* |x| > 1: */
-  TEST_f_f (acos, 1.125L, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (acos, -1.125L, nan_value, INVALID_EXCEPTION);
-
-  TEST_f_f (acos, 0, M_PI_2l);
-  TEST_f_f (acos, minus_zero, M_PI_2l);
-  TEST_f_f (acos, 1, 0);
-  TEST_f_f (acos, -1, M_PIl);
-  TEST_f_f (acos, 0.5, M_PI_6l*2.0);
-  TEST_f_f (acos, -0.5, M_PI_6l*4.0);
-  TEST_f_f (acos, 0.75L, 0.722734247813415611178377352641333362L);
-  TEST_f_f (acos, 2e-17L, 1.57079632679489659923132169163975144L);
-  TEST_f_f (acos, 0.0625L, 1.50825556499840522843072005474337068L);
-  END (acos);
-}
-
-static void
-acosh_test (void)
-{
-  errno = 0;
-  FUNC(acosh) (7);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (acosh);
-
-  TEST_f_f (acosh, plus_infty, plus_infty);
-  TEST_f_f (acosh, minus_infty, nan_value, INVALID_EXCEPTION);
-
-  /* x < 1:  */
-  TEST_f_f (acosh, -1.125L, nan_value, INVALID_EXCEPTION);
-
-  TEST_f_f (acosh, 1, 0);
-  TEST_f_f (acosh, 7, 2.63391579384963341725009269461593689L);
-
-  END (acosh);
-}
-
-static void
-asin_test (void)
-{
-  errno = 0;
-  FUNC(asin) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (asin);
-
-  TEST_f_f (asin, plus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (asin, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (asin, nan_value, nan_value);
-
-  /* asin x == NaN plus invalid exception for |x| > 1.  */
-  TEST_f_f (asin, 1.125L, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (asin, -1.125L, nan_value, INVALID_EXCEPTION);
-
-  TEST_f_f (asin, 0, 0);
-  TEST_f_f (asin, minus_zero, minus_zero);
-  TEST_f_f (asin, 0.5, M_PI_6l);
-  TEST_f_f (asin, -0.5, -M_PI_6l);
-  TEST_f_f (asin, 1.0, M_PI_2l);
-  TEST_f_f (asin, -1.0, -M_PI_2l);
-  TEST_f_f (asin, 0.75L, 0.848062078981481008052944338998418080L);
-
-  END (asin);
-}
-
-static void
-asinh_test (void)
-{
-  errno = 0;
-  FUNC(asinh) (0.7L);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (asinh);
-
-  TEST_f_f (asinh, 0, 0);
-  TEST_f_f (asinh, minus_zero, minus_zero);
-#ifndef TEST_INLINE
-  TEST_f_f (asinh, plus_infty, plus_infty);
-  TEST_f_f (asinh, minus_infty, minus_infty);
-#endif
-  TEST_f_f (asinh, nan_value, nan_value);
-  TEST_f_f (asinh, 0.75L, 0.693147180559945309417232121458176568L);
-
-  END (asinh);
-}
-
-static void
-atan_test (void)
-{
-  errno = 0;
-  FUNC(atan) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (atan);
-
-  TEST_f_f (atan, 0, 0);
-  TEST_f_f (atan, minus_zero, minus_zero);
-
-  TEST_f_f (atan, plus_infty, M_PI_2l);
-  TEST_f_f (atan, minus_infty, -M_PI_2l);
-  TEST_f_f (atan, nan_value, nan_value);
-
-  TEST_f_f (atan, 1, M_PI_4l);
-  TEST_f_f (atan, -1, -M_PI_4l);
-
-  TEST_f_f (atan, 0.75L, 0.643501108793284386802809228717322638L);
-
-  END (atan);
-}
 
 
 
-static void
-atanh_test (void)
-{
-  errno = 0;
-  FUNC(atanh) (0.7L);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (atanh);
 
 
-  TEST_f_f (atanh, 0, 0);
-  TEST_f_f (atanh, minus_zero, minus_zero);
 
-  TEST_f_f (atanh, 1, plus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (atanh, -1, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (atanh, nan_value, nan_value);
 
-  /* atanh (x) == NaN plus invalid exception if |x| > 1.  */
-  TEST_f_f (atanh, 1.125L, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (atanh, -1.125L, nan_value, INVALID_EXCEPTION);
 
-  TEST_f_f (atanh, 0.75L, 0.972955074527656652552676371721589865L);
-
-  END (atanh);
-}
-
-static void
-atan2_test (void)
-{
-  errno = 0;
-  FUNC(atan2) (-0, 1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (atan2);
-
-  /* atan2 (0,x) == 0 for x > 0.  */
-  TEST_ff_f (atan2, 0, 1, 0);
-
-  /* atan2 (-0,x) == -0 for x > 0.  */
-  TEST_ff_f (atan2, minus_zero, 1, minus_zero);
-
-  TEST_ff_f (atan2, 0, 0, 0);
-  TEST_ff_f (atan2, minus_zero, 0, minus_zero);
-
-  /* atan2 (+0,x) == +pi for x < 0.  */
-  TEST_ff_f (atan2, 0, -1, M_PIl);
-
-  /* atan2 (-0,x) == -pi for x < 0.  */
-  TEST_ff_f (atan2, minus_zero, -1, -M_PIl);
-
-  TEST_ff_f (atan2, 0, minus_zero, M_PIl);
-  TEST_ff_f (atan2, minus_zero, minus_zero, -M_PIl);
-
-  /* atan2 (y,+0) == pi/2 for y > 0.  */
-  TEST_ff_f (atan2, 1, 0, M_PI_2l);
-
-  /* atan2 (y,-0) == pi/2 for y > 0.  */
-  TEST_ff_f (atan2, 1, minus_zero, M_PI_2l);
-
-  /* atan2 (y,+0) == -pi/2 for y < 0.  */
-  TEST_ff_f (atan2, -1, 0, -M_PI_2l);
-
-  /* atan2 (y,-0) == -pi/2 for y < 0.  */
-  TEST_ff_f (atan2, -1, minus_zero, -M_PI_2l);
-
-  /* atan2 (y,inf) == +0 for finite y > 0.  */
-  TEST_ff_f (atan2, 1, plus_infty, 0);
-
-  /* atan2 (y,inf) == -0 for finite y < 0.  */
-  TEST_ff_f (atan2, -1, plus_infty, minus_zero);
-
-  /* atan2(+inf, x) == pi/2 for finite x.  */
-  TEST_ff_f (atan2, plus_infty, -1, M_PI_2l);
-
-  /* atan2(-inf, x) == -pi/2 for finite x.  */
-  TEST_ff_f (atan2, minus_infty, 1, -M_PI_2l);
-
-  /* atan2 (y,-inf) == +pi for finite y > 0.  */
-  TEST_ff_f (atan2, 1, minus_infty, M_PIl);
-
-  /* atan2 (y,-inf) == -pi for finite y < 0.  */
-  TEST_ff_f (atan2, -1, minus_infty, -M_PIl);
-
-  TEST_ff_f (atan2, plus_infty, plus_infty, M_PI_4l);
-  TEST_ff_f (atan2, minus_infty, plus_infty, -M_PI_4l);
-  TEST_ff_f (atan2, plus_infty, minus_infty, M_PI_34l);
-  TEST_ff_f (atan2, minus_infty, minus_infty, -M_PI_34l);
-  TEST_ff_f (atan2, nan_value, nan_value, nan_value);
-
-  TEST_ff_f (atan2, 0.75L, 1, 0.643501108793284386802809228717322638L);
-  TEST_ff_f (atan2, -0.75L, 1.0L, -0.643501108793284386802809228717322638L);
-  TEST_ff_f (atan2, 0.75L, -1.0L, 2.49809154479650885165983415456218025L);
-  TEST_ff_f (atan2, -0.75L, -1.0L, -2.49809154479650885165983415456218025L);
-  TEST_ff_f (atan2, 0.390625L, .00029L, 1.57005392693128974780151246612928941L);
-  TEST_ff_f (atan2, 1.390625L, 0.9296875L, 0.981498387184244311516296577615519772L);
-
-  TEST_ff_f (atan2, -0.00756827042671106339L, -.001792735857538728036L, -1.80338464113663849327153994379639112L);
-
-  END (atan2);
-}
 
 static void
 cabs_test (void)
@@ -1458,32 +1249,6 @@ catanh_test (void)
 }
 #endif
 
-static void
-cbrt_test (void)
-{
-  errno = 0;
-  FUNC(cbrt) (8);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (cbrt);
-
-  TEST_f_f (cbrt, 0.0, 0.0);
-  TEST_f_f (cbrt, minus_zero, minus_zero);
-
-  TEST_f_f (cbrt, plus_infty, plus_infty);
-  TEST_f_f (cbrt, minus_infty, minus_infty);
-  TEST_f_f (cbrt, nan_value, nan_value);
-
-  TEST_f_f (cbrt, -0.001L, -0.1L);
-  TEST_f_f (cbrt, 8, 2);
-  TEST_f_f (cbrt, -27.0, -3.0);
-  TEST_f_f (cbrt, 0.9921875L, 0.997389022060725270579075195353955217L);
-  TEST_f_f (cbrt, 0.75L, 0.908560296416069829445605878163630251L);
-
-  END (cbrt);
-}
 
 
 #if 0
@@ -1953,60 +1718,8 @@ copysign_test (void)
 }
 
 
-static void
-cos_test (void)
-{
-  errno = 0;
-  FUNC(cos) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (cos);
-
-  TEST_f_f (cos, 0, 1);
-  TEST_f_f (cos, minus_zero, 1);
-  TEST_f_f (cos, plus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (cos, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (cos, nan_value, nan_value);
-
-  TEST_f_f (cos, M_PI_6l * 2.0, 0.5);
-  TEST_f_f (cos, M_PI_6l * 4.0, -0.5);
-  TEST_f_f (cos, M_PI_2l, 0);
-
-  TEST_f_f (cos, 0.75L, 0.731688868873820886311838753000084544L);
-
-#ifdef TEST_DOUBLE
-  TEST_f_f (cos, 0.80190127184058835, 0.69534156199418473);
-#endif
-
-  END (cos);
-}
 
 
-static void
-cosh_test (void)
-{
-  errno = 0;
-  FUNC(cosh) (0.7L);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (cosh);
-  TEST_f_f (cosh, 0, 1);
-  TEST_f_f (cosh, minus_zero, 1);
-
-#ifndef TEST_INLINE
-  TEST_f_f (cosh, plus_infty, plus_infty);
-  TEST_f_f (cosh, minus_infty, plus_infty);
-#endif
-  TEST_f_f (cosh, nan_value, nan_value);
-
-  TEST_f_f (cosh, 0.75L, 1.29468328467684468784170818539018176L);
-
-  END (cosh);
-}
 
 
 #if 0
@@ -2399,182 +2112,18 @@ ctanh_test (void)
 #endif
 
 
-static void
-erf_test (void)
-{
-  errno = 0;
-  FUNC(erf) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (erf);
-
-  TEST_f_f (erf, 0, 0);
-  TEST_f_f (erf, minus_zero, minus_zero);
-  TEST_f_f (erf, plus_infty, 1);
-  TEST_f_f (erf, minus_infty, -1);
-  TEST_f_f (erf, nan_value, nan_value);
-
-  TEST_f_f (erf, 0.125L, 0.140316204801333817393029446521623398L);
-  TEST_f_f (erf, 0.75L, 0.711155633653515131598937834591410777L);
-  TEST_f_f (erf, 1.25L, 0.922900128256458230136523481197281140L);
-  TEST_f_f (erf, 2.0L, 0.995322265018952734162069256367252929L);
-  TEST_f_f (erf, 4.125L, 0.999999994576599200434933994687765914L);
-  TEST_f_f (erf, 27.0L, 1.0L);
-
-  END (erf);
-}
 
 
-static void
-erfc_test (void)
-{
-  errno = 0;
-  FUNC(erfc) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (erfc);
-
-  TEST_f_f (erfc, plus_infty, 0.0);
-  TEST_f_f (erfc, minus_infty, 2.0);
-  TEST_f_f (erfc, 0.0, 1.0);
-  TEST_f_f (erfc, minus_zero, 1.0);
-  TEST_f_f (erfc, nan_value, nan_value);
-
-  TEST_f_f (erfc, 0.125L, 0.859683795198666182606970553478376602L);
-  TEST_f_f (erfc, 0.75L, 0.288844366346484868401062165408589223L);
-  TEST_f_f (erfc, 1.25L, 0.0770998717435417698634765188027188596L);
-  TEST_f_f (erfc, 2.0L, 0.00467773498104726583793074363274707139L);
-  TEST_f_f (erfc, 4.125L, 0.542340079956506600531223408575531062e-8L);
-#ifdef TEST_LDOUBLE
-  /* The result can only be represented in long double.  */
-# if LDBL_MIN_10_EXP < -319
-  TEST_f_f (erfc, 27.0L, 0.523704892378925568501606768284954709e-318L);
-# endif
-#endif
-
-  END (erfc);
-}
 
 
-static void
-exp_test (void)
-{
-  errno = 0;
-  FUNC(exp) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (exp);
-
-  TEST_f_f (exp, 0, 1);
-  TEST_f_f (exp, minus_zero, 1);
-
-#ifndef TEST_INLINE
-  TEST_f_f (exp, plus_infty, plus_infty);
-  TEST_f_f (exp, minus_infty, 0);
-#endif
-  TEST_f_f (exp, nan_value, nan_value);
-  TEST_f_f (exp, 1, M_El);
-
-  TEST_f_f (exp, 2, M_E2l);
-  TEST_f_f (exp, 3, M_E3l);
-  TEST_f_f (exp, 0.75L, 2.11700001661267466854536981983709561L);
-  TEST_f_f (exp, 50.0L, 5184705528587072464087.45332293348538L);
-#ifdef TEST_LDOUBLE
-  /* The result can only be represented in long double.  */
-  TEST_f_f (exp, 1000.0L, 0.197007111401704699388887935224332313e435L);
-#endif
-
-  END (exp);
-}
 
 
 #if 0
-static void
-exp10_test (void)
-{
-  errno = 0;
-  FUNC(exp10) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (exp10);
-
-  TEST_f_f (exp10, 0, 1);
-  TEST_f_f (exp10, minus_zero, 1);
-
-  TEST_f_f (exp10, plus_infty, plus_infty);
-  TEST_f_f (exp10, minus_infty, 0);
-  TEST_f_f (exp10, nan_value, nan_value);
-  TEST_f_f (exp10, 3, 1000);
-  TEST_f_f (exp10, -1, 0.1L);
-  TEST_f_f (exp10, 1e6, plus_infty);
-  TEST_f_f (exp10, -1e6, 0);
-  TEST_f_f (exp10, 0.75L, 5.62341325190349080394951039776481231L);
-
-  END (exp10);
-}
 
 
-static void
-exp2_test (void)
-{
-  errno = 0;
-  FUNC(exp2) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (exp2);
-
-  TEST_f_f (exp2, 0, 1);
-  TEST_f_f (exp2, minus_zero, 1);
-  TEST_f_f (exp2, plus_infty, plus_infty);
-  TEST_f_f (exp2, minus_infty, 0);
-  TEST_f_f (exp2, nan_value, nan_value);
-
-  TEST_f_f (exp2, 10, 1024);
-  TEST_f_f (exp2, -1, 0.5);
-  TEST_f_f (exp2, 1e6, plus_infty);
-  TEST_f_f (exp2, -1e6, 0);
-  TEST_f_f (exp2, 0.75L, 1.68179283050742908606225095246642979L);
-
-  END (exp2);
-}
 #endif
 
 
-static void
-expm1_test (void)
-{
-  errno = 0;
-  FUNC(expm1) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (expm1);
-
-  TEST_f_f (expm1, 0, 0);
-  TEST_f_f (expm1, minus_zero, minus_zero);
-
-#ifndef TEST_INLINE
-  TEST_f_f (expm1, plus_infty, plus_infty);
-  TEST_f_f (expm1, minus_infty, -1);
-#endif
-  TEST_f_f (expm1, nan_value, nan_value);
-
-  TEST_f_f (expm1, 1, M_El - 1.0);
-  TEST_f_f (expm1, 0.75L, 1.11700001661267466854536981983709561L);
-
-  END (expm1);
-}
 
 
 static void
@@ -2700,33 +2249,6 @@ floor_test (void)
 }
 
 
-static void
-fma_test (void)
-{
-  START (fma);
-
-  TEST_fff_f (fma, 1.0, 2.0, 3.0, 5.0);
-  TEST_fff_f (fma, nan_value, 2.0, 3.0, nan_value);
-  TEST_fff_f (fma, 1.0, nan_value, 3.0, nan_value);
-  TEST_fff_f (fma, 1.0, 2.0, nan_value, nan_value, INVALID_EXCEPTION_OK);
-  TEST_fff_f (fma, plus_infty, 0.0, nan_value, nan_value, INVALID_EXCEPTION_OK);
-  TEST_fff_f (fma, minus_infty, 0.0, nan_value, nan_value, INVALID_EXCEPTION_OK);
-  TEST_fff_f (fma, 0.0, plus_infty, nan_value, nan_value, INVALID_EXCEPTION_OK);
-  TEST_fff_f (fma, 0.0, minus_infty, nan_value, nan_value, INVALID_EXCEPTION_OK);
-  TEST_fff_f (fma, plus_infty, 0.0, 1.0, nan_value, INVALID_EXCEPTION);
-  TEST_fff_f (fma, minus_infty, 0.0, 1.0, nan_value, INVALID_EXCEPTION);
-  TEST_fff_f (fma, 0.0, plus_infty, 1.0, nan_value, INVALID_EXCEPTION);
-  TEST_fff_f (fma, 0.0, minus_infty, 1.0, nan_value, INVALID_EXCEPTION);
-
-  TEST_fff_f (fma, plus_infty, plus_infty, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_fff_f (fma, minus_infty, plus_infty, plus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_fff_f (fma, plus_infty, minus_infty, plus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_fff_f (fma, minus_infty, minus_infty, minus_infty, nan_value, INVALID_EXCEPTION);
-
-  TEST_fff_f (fma, 1.25L, 0.75L, 0.0625L, 1.0L);
-
-  END (fma);
-}
 
 
 static void
@@ -2883,76 +2405,7 @@ frexp_test (void)
 }
 
 
-static void
-gamma_test (void)
-{
-  errno = 0;
-  FUNC(gamma) (1);
 
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-  feclearexcept (FE_ALL_EXCEPT);
-
-  START (gamma);
-
-  TEST_f_f (gamma, plus_infty, plus_infty);
-  TEST_f_f (gamma, 0, plus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (gamma, -3, plus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (gamma, minus_infty, plus_infty);
-  TEST_f_f (gamma, nan_value, nan_value);
-
-  TEST_f_f1 (gamma, 1, 0, 1);
-  TEST_f_f1 (gamma, 3, M_LN2l, 1);
-
-  TEST_f_f1 (gamma, 0.5, M_LOG_SQRT_PIl, 1);
-  TEST_f_f1 (gamma, -0.5, M_LOG_2_SQRT_PIl, -1);
-
-  END (gamma);
-}
-
-static void
-hypot_test (void)
-{
-  errno = 0;
-  FUNC(hypot) (0.7L, 12.4L);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (hypot);
-
-  TEST_ff_f (hypot, plus_infty, 1, plus_infty, IGNORE_ZERO_INF_SIGN);
-  TEST_ff_f (hypot, minus_infty, 1, plus_infty, IGNORE_ZERO_INF_SIGN);
-
-#ifndef TEST_INLINE
-  TEST_ff_f (hypot, plus_infty, nan_value, plus_infty);
-  TEST_ff_f (hypot, minus_infty, nan_value, plus_infty);
-  TEST_ff_f (hypot, nan_value, plus_infty, plus_infty);
-  TEST_ff_f (hypot, nan_value, minus_infty, plus_infty);
-#endif
-
-  TEST_ff_f (hypot, nan_value, nan_value, nan_value);
-
-  /* hypot (x,y) == hypot (+-x, +-y)  */
-  TEST_ff_f (hypot, 0.7L, 12.4L, 12.419742348374220601176836866763271L);
-  TEST_ff_f (hypot, -0.7L, 12.4L, 12.419742348374220601176836866763271L);
-  TEST_ff_f (hypot, 0.7L, -12.4L, 12.419742348374220601176836866763271L);
-  TEST_ff_f (hypot, -0.7L, -12.4L, 12.419742348374220601176836866763271L);
-  TEST_ff_f (hypot, 12.4L, 0.7L, 12.419742348374220601176836866763271L);
-  TEST_ff_f (hypot, -12.4L, 0.7L, 12.419742348374220601176836866763271L);
-  TEST_ff_f (hypot, 12.4L, -0.7L, 12.419742348374220601176836866763271L);
-  TEST_ff_f (hypot, -12.4L, -0.7L, 12.419742348374220601176836866763271L);
-
-  /*  hypot (x,0) == fabs (x)  */
-  TEST_ff_f (hypot, 0.75L, 0, 0.75L);
-  TEST_ff_f (hypot, -0.75L, 0, 0.75L);
-  TEST_ff_f (hypot, -5.7e7, 0, 5.7e7L);
-
-  TEST_ff_f (hypot, 0.75L, 1.25L, 1.45773797371132511771853821938639577L);
-
-  END (hypot);
-}
 
 
 static void
@@ -3006,154 +2459,6 @@ isnormal_test (void)
   END (isnormal);
 }
 
-#if defined __DO_XSI_MATH__ && !(defined TEST_LDOUBLE || defined TEST_FLOAT)
-static void
-j0_test (void)
-{
-  errno = 0;
-#if 0
-  FLOAT s, c;
-  FUNC (sincos) (0, &s, &c);
-  if (errno == ENOSYS)
-    /* Required function not implemented.  */
-    return;
-#endif
-  FUNC(j0) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (j0);
-
-  /* j0 is the Bessel function of the first kind of order 0 */
-  TEST_f_f (j0, nan_value, nan_value);
-  TEST_f_f (j0, plus_infty, 0);
-  TEST_f_f (j0, -1.0, 0.765197686557966551449717526102663221L);
-  TEST_f_f (j0, 0.0, 1.0);
-  TEST_f_f (j0, 0.125L, 0.996097563041985204620768999453174712L);
-  TEST_f_f (j0, 0.75L, 0.864242275166648623555731103820923211L);
-  TEST_f_f (j0, 1.0, 0.765197686557966551449717526102663221L);
-  TEST_f_f (j0, 1.5, 0.511827671735918128749051744283411720L);
-  TEST_f_f (j0, 2.0, 0.223890779141235668051827454649948626L);
-  TEST_f_f (j0, 8.0, 0.171650807137553906090869407851972001L);
-  TEST_f_f (j0, 10.0, -0.245935764451348335197760862485328754L);
-  TEST_f_f (j0, 4.0, -3.9714980986384737228659076845169804197562E-1L);
-  TEST_f_f (j0, -4.0, -3.9714980986384737228659076845169804197562E-1L);
-
-  END (j0);
-}
-
-
-static void
-j1_test (void)
-{
-  errno = 0;
-#if 0
-  FLOAT s, c;
-  FUNC (sincos) (0, &s, &c);
-  if (errno == ENOSYS)
-    /* Required function not implemented.  */
-    return;
-#endif
-  FUNC(j1) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  /* j1 is the Bessel function of the first kind of order 1 */
-
-  START (j1);
-
-  TEST_f_f (j1, nan_value, nan_value);
-  TEST_f_f (j1, plus_infty, 0);
-
-  TEST_f_f (j1, -1.0, -0.440050585744933515959682203718914913L);
-  TEST_f_f (j1, 0.0, 0.0);
-  TEST_f_f (j1, 0.125L, 0.0623780091344946810942311355879361177L);
-  TEST_f_f (j1, 0.75L, 0.349243602174862192523281016426251335L);
-  TEST_f_f (j1, 1.0, 0.440050585744933515959682203718914913L);
-  TEST_f_f (j1, 1.5, 0.557936507910099641990121213156089400L);
-  TEST_f_f (j1, 2.0, 0.576724807756873387202448242269137087L);
-  TEST_f_f (j1, 8.0, 0.234636346853914624381276651590454612L);
-  TEST_f_f (j1, 10.0, 0.0434727461688614366697487680258592883L);
-
-  END (j1);
-}
-
-static void
-jn_test (void)
-{
-  errno = 0;
-#if 0
-  FLOAT s, c;
-  FUNC (sincos) (0, &s, &c);
-  if (errno == ENOSYS)
-    /* Required function not implemented.  */
-    return;
-#endif
-  FUNC(jn) (1, 1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  /* jn is the Bessel function of the first kind of order n.  */
-  START (jn);
-
-  /* jn (0, x) == j0 (x)  */
-  TEST_ff_f (jn, 0, nan_value, nan_value);
-  TEST_ff_f (jn, 0, plus_infty, 0);
-  TEST_ff_f (jn, 0, -1.0, 0.765197686557966551449717526102663221L);
-  TEST_ff_f (jn, 0, 0.0, 1.0);
-  TEST_ff_f (jn, 0, 0.125L, 0.996097563041985204620768999453174712L);
-  TEST_ff_f (jn, 0, 0.75L, 0.864242275166648623555731103820923211L);
-  TEST_ff_f (jn, 0, 1.0, 0.765197686557966551449717526102663221L);
-  TEST_ff_f (jn, 0, 1.5, 0.511827671735918128749051744283411720L);
-  TEST_ff_f (jn, 0, 2.0, 0.223890779141235668051827454649948626L);
-  TEST_ff_f (jn, 0, 8.0, 0.171650807137553906090869407851972001L);
-  TEST_ff_f (jn, 0, 10.0, -0.245935764451348335197760862485328754L);
-  TEST_ff_f (jn, 0, 4.0, -3.9714980986384737228659076845169804197562E-1L);
-  TEST_ff_f (jn, 0, -4.0, -3.9714980986384737228659076845169804197562E-1L);
-
-  /* jn (1, x) == j1 (x)  */
-  TEST_ff_f (jn, 1, nan_value, nan_value);
-  TEST_ff_f (jn, 1, plus_infty, 0);
-  TEST_ff_f (jn, 1, -1.0, -0.440050585744933515959682203718914913L);
-  TEST_ff_f (jn, 1, 0.0, 0.0);
-  TEST_ff_f (jn, 1, 0.125L, 0.0623780091344946810942311355879361177L);
-  TEST_ff_f (jn, 1, 0.75L, 0.349243602174862192523281016426251335L);
-  TEST_ff_f (jn, 1, 1.0, 0.440050585744933515959682203718914913L);
-  TEST_ff_f (jn, 1, 1.5, 0.557936507910099641990121213156089400L);
-  TEST_ff_f (jn, 1, 2.0, 0.576724807756873387202448242269137087L);
-  TEST_ff_f (jn, 1, 8.0, 0.234636346853914624381276651590454612L);
-  TEST_ff_f (jn, 1, 10.0, 0.0434727461688614366697487680258592883L);
-
-  /* jn (3, x)  */
-  TEST_ff_f (jn, 3, nan_value, nan_value);
-  TEST_ff_f (jn, 3, plus_infty, 0);
-
-  TEST_ff_f (jn, 3, -1.0, -0.0195633539826684059189053216217515083L);
-  TEST_ff_f (jn, 3, 0.0, 0.0);
-  TEST_ff_f (jn, 3, 0.125L, 0.406503832554912875023029337653442868e-4L);
-  TEST_ff_f (jn, 3, 0.75L, 0.848438342327410884392755236884386804e-2L);
-  TEST_ff_f (jn, 3, 1.0, 0.0195633539826684059189053216217515083L);
-  TEST_ff_f (jn, 3, 2.0, 0.128943249474402051098793332969239835L);
-  TEST_ff_f (jn, 3, 10.0, 0.0583793793051868123429354784103409563L);
-
-  /*  jn (10, x)  */
-  TEST_ff_f (jn, 10, nan_value, nan_value);
-  TEST_ff_f (jn, 10, plus_infty, 0);
-
-  TEST_ff_f (jn, 10, -1.0, 0.263061512368745320699785368779050294e-9L);
-  TEST_ff_f (jn, 10, 0.0, 0.0);
-  TEST_ff_f (jn, 10, 0.125L, 0.250543369809369890173993791865771547e-18L);
-  TEST_ff_f (jn, 10, 0.75L, 0.149621713117596814698712483621682835e-10L);
-  TEST_ff_f (jn, 10, 1.0, 0.263061512368745320699785368779050294e-9L);
-  TEST_ff_f (jn, 10, 2.0, 0.251538628271673670963516093751820639e-6L);
-  TEST_ff_f (jn, 10, 10.0, 0.207486106633358857697278723518753428L);
-
-  END (jn);
-}
-#endif /* __DO_XSI_MATH__ */
 
 
 static void
@@ -3174,40 +2479,8 @@ ldexp_test (void)
 }
 
 
-static void
-lgamma_test (void)
-{
-  errno = 0;
-  FUNC(lgamma) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-  feclearexcept (FE_ALL_EXCEPT);
-
-  START (lgamma);
-
-  TEST_f_f (lgamma, plus_infty, plus_infty);
-  TEST_f_f (lgamma, 0, plus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (lgamma, nan_value, nan_value);
-
-  /* lgamma (x) == +inf plus divide by zero exception for integer x <= 0.  */
-  TEST_f_f (lgamma, -3, plus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (lgamma, minus_infty, plus_infty);
-
-  TEST_f_f1 (lgamma, 1, 0, 1);
-
-  TEST_f_f1 (lgamma, 3, M_LN2l, 1);
-
-  TEST_f_f1 (lgamma, 0.5, M_LOG_SQRT_PIl, 1);
-  TEST_f_f1 (lgamma, -0.5, M_LOG_2_SQRT_PIl, -1);
-  TEST_f_f1 (lgamma, 0.7L, 0.260867246531666514385732417016759578L, 1);
-  TEST_f_f1 (lgamma, 1.2L, -0.853740900033158497197028392998854470e-1L, 1);
-
-  END (lgamma);
-}
 
 
-#if 0
 static void
 lrint_test (void)
 {
@@ -3326,127 +2599,13 @@ llrint_test (void)
 
   END (llrint);
 }
-#endif
 
 
-static void
-log_test (void)
-{
-  errno = 0;
-  FUNC(log) (1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-  START (log);
-
-  TEST_f_f (log, 0, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (log, minus_zero, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-
-  TEST_f_f (log, 1, 0);
-
-  TEST_f_f (log, -1, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (log, plus_infty, plus_infty);
-
-  TEST_f_f (log, M_El, 1);
-  TEST_f_f (log, 1.0 / M_El, -1);
-  TEST_f_f (log, 2, M_LN2l);
-  TEST_f_f (log, 10, M_LN10l);
-  TEST_f_f (log, 0.75L, -0.287682072451780927439219005993827432L);
-
-  END (log);
-}
 
 
-static void
-log10_test (void)
-{
-  errno = 0;
-  FUNC(log10) (1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (log10);
-
-  TEST_f_f (log10, 0, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (log10, minus_zero, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-
-  TEST_f_f (log10, 1, 0);
-
-  /* log10 (x) == NaN plus invalid exception if x < 0.  */
-  TEST_f_f (log10, -1, nan_value, INVALID_EXCEPTION);
-
-  TEST_f_f (log10, plus_infty, plus_infty);
-  TEST_f_f (log10, nan_value, nan_value);
-
-  TEST_f_f (log10, 0.1L, -1);
-  TEST_f_f (log10, 10.0, 1);
-  TEST_f_f (log10, 100.0, 2);
-  TEST_f_f (log10, 10000.0, 4);
-  TEST_f_f (log10, M_El, M_LOG10El);
-  TEST_f_f (log10, 0.75L, -0.124938736608299953132449886193870744L);
-
-  END (log10);
-}
 
 
-static void
-log1p_test (void)
-{
-  errno = 0;
-  FUNC(log1p) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
 
-  START (log1p);
-
-  TEST_f_f (log1p, 0, 0);
-  TEST_f_f (log1p, minus_zero, minus_zero);
-
-  TEST_f_f (log1p, -1, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (log1p, -2, nan_value, INVALID_EXCEPTION);
-
-  TEST_f_f (log1p, plus_infty, plus_infty);
-  TEST_f_f (log1p, nan_value, nan_value);
-
-  TEST_f_f (log1p, M_El - 1.0, 1);
-
-  TEST_f_f (log1p, -0.25L, -0.287682072451780927439219005993827432L);
-  TEST_f_f (log1p, -0.875, -2.07944154167983592825169636437452970L);
-
-  END (log1p);
-}
-
-static void
-log2_test (void)
-{
-  errno = 0;
-  FUNC(log2) (1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (log2);
-
-  TEST_f_f (log2, 0, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (log2, minus_zero, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-
-  TEST_f_f (log2, 1, 0);
-
-  TEST_f_f (log2, -1, nan_value, INVALID_EXCEPTION);
-
-  TEST_f_f (log2, plus_infty, plus_infty);
-  TEST_f_f (log2, nan_value, nan_value);
-
-  TEST_f_f (log2, M_El, M_LOG2El);
-  TEST_f_f (log2, 2.0, 1);
-  TEST_f_f (log2, 16.0, 4);
-  TEST_f_f (log2, 256.0, 8);
-  TEST_f_f (log2, 0.75L, -.415037499278843818546261056052183492L);
-
-  END (log2);
-}
 
 static void
 logb_test (void)
@@ -3470,7 +2629,6 @@ logb_test (void)
 }
 
 
-#if 0
 static void
 lround_test (void)
 {
@@ -3605,7 +2763,6 @@ llround_test (void)
 
   END (llround);
 }
-#endif
 
 static void
 modf_test (void)
@@ -4048,7 +3205,7 @@ rint_test (void)
   END (rint);
 }
 
-#if 0
+#ifdef __UCLIBC_HAS_FENV__
 static void
 rint_test_tonearest (void)
 {
@@ -4084,6 +3241,8 @@ rint_test_towardzero (void)
 
   save_round_mode = fegetround();
 
+  /* A mode the target cannot select has no macro (C99 7.6).  */
+#ifdef FE_TOWARDZERO
   if (!fesetround (FE_TOWARDZERO))
   {
     TEST_f_f (rint, 2.0, 2.0);
@@ -4097,6 +3256,7 @@ rint_test_towardzero (void)
     TEST_f_f (rint, -1.5, -1.0);
     TEST_f_f (rint, -2.0, -2.0);
   }
+#endif
 
   fesetround(save_round_mode);
 
@@ -4111,6 +3271,7 @@ rint_test_downward (void)
 
   save_round_mode = fegetround();
 
+#ifdef FE_DOWNWARD
   if (!fesetround (FE_DOWNWARD))
   {
     TEST_f_f (rint, 2.0, 2.0);
@@ -4124,6 +3285,7 @@ rint_test_downward (void)
     TEST_f_f (rint, -1.5, -2.0);
     TEST_f_f (rint, -2.0, -2.0);
   }
+#endif
 
   fesetround(save_round_mode);
 
@@ -4138,6 +3300,7 @@ rint_test_upward (void)
 
   save_round_mode = fegetround();
 
+#ifdef FE_UPWARD
   if (!fesetround (FE_UPWARD))
   {
     TEST_f_f (rint, 2.0, 2.0);
@@ -4151,11 +3314,13 @@ rint_test_upward (void)
     TEST_f_f (rint, -1.5, -1.0);
     TEST_f_f (rint, -2.0, -2.0);
   }
+#endif
 
   fesetround(save_round_mode);
 
   END (rint_upward);
 }
+#endif /* __UCLIBC_HAS_FENV__ */
 
 static void
 round_test (void)
@@ -4222,7 +3387,6 @@ round_test (void)
 
   END (round);
 }
-#endif
 
 
 #ifdef __UCLIBC_SUSV3_LEGACY__
@@ -4350,222 +3514,16 @@ signbit_test (void)
 }
 
 
-static void
-sin_test (void)
-{
-  errno = 0;
-  FUNC(sin) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (sin);
-
-  TEST_f_f (sin, 0, 0);
-  TEST_f_f (sin, minus_zero, minus_zero);
-  TEST_f_f (sin, plus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (sin, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (sin, nan_value, nan_value);
-
-  TEST_f_f (sin, M_PI_6l, 0.5);
-  TEST_f_f (sin, -M_PI_6l, -0.5);
-  TEST_f_f (sin, M_PI_2l, 1);
-  TEST_f_f (sin, -M_PI_2l, -1);
-  TEST_f_f (sin, 0.75L, 0.681638760023334166733241952779893935L);
-
-#ifdef TEST_DOUBLE
-  TEST_f_f (sin, 0.80190127184058835, 0.71867942238767868);
-#endif
-
-  END (sin);
-
-}
 
 
-#if 0
-static void
-sincos_test (void)
-{
-  FLOAT sin_res, cos_res;
-
-  errno = 0;
-  FUNC(sincos) (0, &sin_res, &cos_res);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (sincos);
-
-  /* sincos is treated differently because it returns void.  */
-  TEST_extra (sincos, 0, 0, 1);
-
-  TEST_extra (sincos, minus_zero, minus_zero, 1);
-  TEST_extra (sincos, plus_infty, nan_value, nan_value, INVALID_EXCEPTION);
-  TEST_extra (sincos, minus_infty, nan_value, nan_value, INVALID_EXCEPTION);
-  TEST_extra (sincos, nan_value, nan_value, nan_value);
-
-  TEST_extra (sincos, M_PI_2l, 1, 0);
-  TEST_extra (sincos, M_PI_6l, 0.5, 0.86602540378443864676372317075293616L);
-  TEST_extra (sincos, M_PI_6l*2.0, 0.86602540378443864676372317075293616L, 0.5);
-  TEST_extra (sincos, 0.75L, 0.681638760023334166733241952779893935L, 0.731688868873820886311838753000084544L);
-
-#ifdef TEST_DOUBLE
-  TEST_extra (sincos, 0.80190127184058835, 0.71867942238767868, 0.69534156199418473);
-#endif
-
-  END (sincos);
-}
-#endif
-
-static void
-sinh_test (void)
-{
-  errno = 0;
-  FUNC(sinh) (0.7L);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (sinh);
-  TEST_f_f (sinh, 0, 0);
-  TEST_f_f (sinh, minus_zero, minus_zero);
-
-#ifndef TEST_INLINE
-  TEST_f_f (sinh, plus_infty, plus_infty);
-  TEST_f_f (sinh, minus_infty, minus_infty);
-#endif
-  TEST_f_f (sinh, nan_value, nan_value);
-
-  TEST_f_f (sinh, 0.75L, 0.822316731935829980703661634446913849L);
-  TEST_f_f (sinh, 0x8p-32L, 1.86264514923095703232705808926175479e-9L);
-
-  END (sinh);
-}
-
-static void
-sqrt_test (void)
-{
-  errno = 0;
-  FUNC(sqrt) (1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (sqrt);
-
-  TEST_f_f (sqrt, 0, 0);
-  TEST_f_f (sqrt, nan_value, nan_value);
-  TEST_f_f (sqrt, plus_infty, plus_infty);
-
-  TEST_f_f (sqrt, minus_zero, minus_zero);
-
-  /* sqrt (x) == NaN plus invalid exception for x < 0.  */
-  TEST_f_f (sqrt, -1, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (sqrt, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (sqrt, nan_value, nan_value);
-
-  TEST_f_f (sqrt, 2209, 47);
-  TEST_f_f (sqrt, 4, 2);
-  TEST_f_f (sqrt, 2, M_SQRT2l);
-  TEST_f_f (sqrt, 0.25, 0.5);
-  TEST_f_f (sqrt, 6642.25, 81.5);
-  TEST_f_f (sqrt, 15190.5625L, 123.25L);
-  TEST_f_f (sqrt, 0.75L, 0.866025403784438646763723170752936183L);
-
-  END (sqrt);
-}
 
 
-static void
-tan_test (void)
-{
-  errno = 0;
-  FUNC(tan) (0);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (tan);
-
-  TEST_f_f (tan, 0, 0);
-  TEST_f_f (tan, minus_zero, minus_zero);
-  TEST_f_f (tan, plus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (tan, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (tan, nan_value, nan_value);
-
-  TEST_f_f (tan, M_PI_4l, 1);
-  TEST_f_f (tan, 0.75L, 0.931596459944072461165202756573936428L);
-
-  END (tan);
-}
-
-static void
-tanh_test (void)
-{
-  errno = 0;
-  FUNC(tanh) (0.7L);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  START (tanh);
-
-  TEST_f_f (tanh, 0, 0);
-  /* vda: uclibc: added IGNORE_ZERO_INF_SIGN to treat -0 as ok */
-  TEST_f_f (tanh, minus_zero, minus_zero, IGNORE_ZERO_INF_SIGN);
-
-#ifndef TEST_INLINE
-  TEST_f_f (tanh, plus_infty, 1);
-  TEST_f_f (tanh, minus_infty, -1);
-#endif
-  TEST_f_f (tanh, nan_value, nan_value);
-
-  TEST_f_f (tanh, 0.75L, 0.635148952387287319214434357312496495L);
-  TEST_f_f (tanh, -0.75L, -0.635148952387287319214434357312496495L);
-
-  TEST_f_f (tanh, 1.0L, 0.7615941559557648881194582826047935904L);
-  TEST_f_f (tanh, -1.0L, -0.7615941559557648881194582826047935904L);
-
-  /* 2^-57  */
-  TEST_f_f (tanh, 0x1p-57L, 6.938893903907228377647697925567626953125e-18L);
-
-  END (tanh);
-}
-
-static void
-tgamma_test (void)
-{
-  errno = 0;
-  FUNC(tgamma) (1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-  feclearexcept (FE_ALL_EXCEPT);
-
-  START (tgamma);
-
-  TEST_f_f (tgamma, plus_infty, plus_infty);
-  TEST_f_f (tgamma, 0, plus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  TEST_f_f (tgamma, minus_zero, minus_infty, DIVIDE_BY_ZERO_EXCEPTION);
-  /* tgamma (x) == NaN plus invalid exception for integer x <= 0.  */
-  TEST_f_f (tgamma, -2, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (tgamma, minus_infty, nan_value, INVALID_EXCEPTION);
-  TEST_f_f (tgamma, nan_value, nan_value);
-
-  TEST_f_f (tgamma, 0.5, M_SQRT_PIl);
-  TEST_f_f (tgamma, -0.5, -M_2_SQRT_PIl);
-
-  TEST_f_f (tgamma, 1, 1);
-  TEST_f_f (tgamma, 4, 6);
-
-  TEST_f_f (tgamma, 0.7L, 1.29805533264755778568117117915281162L);
-  TEST_f_f (tgamma, 1.2L, 0.918168742399760610640951655185830401L);
-
-  END (tgamma);
-}
 
 
-#if 0
+
+
+
+
 static void
 trunc_test (void)
 {
@@ -4640,152 +3598,7 @@ trunc_test (void)
 
   END (trunc);
 }
-#endif
 
-#if defined __DO_XSI_MATH__ && !(defined TEST_LDOUBLE || defined TEST_FLOAT)
-static void
-y0_test (void)
-{
-  errno = 0;
-#if 0
-  FLOAT s, c;
-  FUNC (sincos) (0, &s, &c);
-  if (errno == ENOSYS)
-    /* Required function not implemented.  */
-    return;
-#endif
-  FUNC(y0) (1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  /* y0 is the Bessel function of the second kind of order 0 */
-  START (y0);
-
-  TEST_f_f (y0, -1.0, minus_infty, INVALID_EXCEPTION);
-  TEST_f_f (y0, 0.0, minus_infty);
-  TEST_f_f (y0, nan_value, nan_value);
-  TEST_f_f (y0, plus_infty, 0);
-
-  TEST_f_f (y0, 0.125L, -1.38968062514384052915582277745018693L);
-  TEST_f_f (y0, 0.75L, -0.137172769385772397522814379396581855L);
-  TEST_f_f (y0, 1.0, 0.0882569642156769579829267660235151628L);
-  TEST_f_f (y0, 1.5, 0.382448923797758843955068554978089862L);
-  TEST_f_f (y0, 2.0, 0.510375672649745119596606592727157873L);
-  TEST_f_f (y0, 8.0, 0.223521489387566220527323400498620359L);
-  TEST_f_f (y0, 10.0, 0.0556711672835993914244598774101900481L);
-
-  END (y0);
-}
-
-
-static void
-y1_test (void)
-{
-  errno = 0;
-#if 0
-  FLOAT s, c;
-  FUNC (sincos) (0, &s, &c);
-  if (errno == ENOSYS)
-    /* Required function not implemented.  */
-    return;
-#endif
-  FUNC(y1) (1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  /* y1 is the Bessel function of the second kind of order 1 */
-  START (y1);
-
-  TEST_f_f (y1, -1.0, minus_infty, INVALID_EXCEPTION);
-  TEST_f_f (y1, 0.0, minus_infty);
-  TEST_f_f (y1, plus_infty, 0);
-  TEST_f_f (y1, nan_value, nan_value);
-
-  TEST_f_f (y1, 0.125L, -5.19993611253477499595928744876579921L);
-  TEST_f_f (y1, 0.75L, -1.03759455076928541973767132140642198L);
-  TEST_f_f (y1, 1.0, -0.781212821300288716547150000047964821L);
-  TEST_f_f (y1, 1.5, -0.412308626973911295952829820633445323L);
-  TEST_f_f (y1, 2.0, -0.107032431540937546888370772277476637L);
-  TEST_f_f (y1, 8.0, -0.158060461731247494255555266187483550L);
-  TEST_f_f (y1, 10.0, 0.249015424206953883923283474663222803L);
-
-  END (y1);
-}
-
-
-static void
-yn_test (void)
-{
-  errno = 0;
-#if 0
-  FLOAT s, c;
-  FUNC (sincos) (0, &s, &c);
-  if (errno == ENOSYS)
-    /* Required function not implemented.  */
-    return;
-#endif
-  FUNC(yn) (1, 1);
-  if (errno == ENOSYS)
-    /* Function not implemented.  */
-    return;
-
-  /* yn is the Bessel function of the second kind of order n */
-  START (yn);
-
-  /* yn (0, x) == y0 (x)  */
-  TEST_ff_f (yn, 0, -1.0, minus_infty, INVALID_EXCEPTION);
-  TEST_ff_f (yn, 0, 0.0, minus_infty);
-  TEST_ff_f (yn, 0, nan_value, nan_value);
-  TEST_ff_f (yn, 0, plus_infty, 0);
-
-  TEST_ff_f (yn, 0, 0.125L, -1.38968062514384052915582277745018693L);
-  TEST_ff_f (yn, 0, 0.75L, -0.137172769385772397522814379396581855L);
-  TEST_ff_f (yn, 0, 1.0, 0.0882569642156769579829267660235151628L);
-  TEST_ff_f (yn, 0, 1.5, 0.382448923797758843955068554978089862L);
-  TEST_ff_f (yn, 0, 2.0, 0.510375672649745119596606592727157873L);
-  TEST_ff_f (yn, 0, 8.0, 0.223521489387566220527323400498620359L);
-  TEST_ff_f (yn, 0, 10.0, 0.0556711672835993914244598774101900481L);
-
-  /* yn (1, x) == y1 (x)  */
-  TEST_ff_f (yn, 1, -1.0, minus_infty, INVALID_EXCEPTION);
-  TEST_ff_f (yn, 1, 0.0, minus_infty);
-  TEST_ff_f (yn, 1, plus_infty, 0);
-  TEST_ff_f (yn, 1, nan_value, nan_value);
-
-  TEST_ff_f (yn, 1, 0.125L, -5.19993611253477499595928744876579921L);
-  TEST_ff_f (yn, 1, 0.75L, -1.03759455076928541973767132140642198L);
-  TEST_ff_f (yn, 1, 1.0, -0.781212821300288716547150000047964821L);
-  TEST_ff_f (yn, 1, 1.5, -0.412308626973911295952829820633445323L);
-  TEST_ff_f (yn, 1, 2.0, -0.107032431540937546888370772277476637L);
-  TEST_ff_f (yn, 1, 8.0, -0.158060461731247494255555266187483550L);
-  TEST_ff_f (yn, 1, 10.0, 0.249015424206953883923283474663222803L);
-
-  /* yn (3, x)  */
-  TEST_ff_f (yn, 3, plus_infty, 0);
-  TEST_ff_f (yn, 3, nan_value, nan_value);
-
-  TEST_ff_f (yn, 3, 0.125L, -2612.69757350066712600220955744091741L);
-  TEST_ff_f (yn, 3, 0.75L, -12.9877176234475433186319774484809207L);
-  TEST_ff_f (yn, 3, 1.0, -5.82151760596472884776175706442981440L);
-  TEST_ff_f (yn, 3, 2.0, -1.12778377684042778608158395773179238L);
-  TEST_ff_f (yn, 3, 10.0, -0.251362657183837329779204747654240998L);
-
-  /* yn (10, x)  */
-  TEST_ff_f (yn, 10, plus_infty, 0);
-  TEST_ff_f (yn, 10, nan_value, nan_value);
-
-  TEST_ff_f (yn, 10, 0.125L, -127057845771019398.252538486899753195L);
-  TEST_ff_f (yn, 10, 0.75L, -2133501638.90573424452445412893839236L);
-  TEST_ff_f (yn, 10, 1.0, -121618014.278689189288130426667971145L);
-  TEST_ff_f (yn, 10, 2.0, -129184.542208039282635913145923304214L);
-  TEST_ff_f (yn, 10, 10.0, -0.359814152183402722051986577343560609L);
-
-  END (yn);
-
-}
-#endif /* __DO_XSI_MATH__ */
 
 
 static void
@@ -4933,38 +3746,35 @@ main (int argc, char **argv)
   signbit_test ();
 
   /* Trigonometric functions:  */
-  acos_test ();
-  asin_test ();
-  atan_test ();
-  atan2_test ();
-  cos_test ();
-  sin_test ();
-#if 0
-  sincos_test ();
-#endif
-  tan_test ();
+  /* acos: see tst-atan-ulp.c */
+  /* asin: see tst-atan-ulp.c */
+  /* atan: see tst-atan-ulp.c */
+  /* atan2: see tst-atan-ulp.c */
+  /* cos: see tst-sin-ulp.c */
+  /* sin: see tst-sin-ulp.c */
+  /* sincos: see tst-sin-ulp.c */
+  /* tan: see tst-tan-ulp.c */
 
   /* Hyperbolic functions:  */
-  acosh_test ();
-  asinh_test ();
-  atanh_test ();
-  cosh_test ();
-  sinh_test ();
-  tanh_test ();
+  /* acosh: see tst-acosh-ulp.c */
+  /* asinh: see tst-acosh-ulp.c */
+  /* atanh: see tst-acosh-ulp.c */
+  /* cosh: see tst-cbrt-ulp.c */
+  /* sinh: see tst-sinh-ulp.c */
+  /* tanh: see tst-sinh-ulp.c */
 
   /* Exponential and logarithmic functions:  */
-  exp_test ();
-#if 0
-  exp10_test ();
-  exp2_test ();
-#endif
-  expm1_test ();
+  /* exp: see tst-exp-ulp.c */
+  /* exp10 and exp2: see tst-exp2-ulp.c.  Both bodies here were behind #if 0
+     and had never been compiled, which is why exp10 could be off by 845
+     representable values without anyone noticing.  */
+  /* expm1: see tst-expm1-ulp.c */
   frexp_test ();
   ldexp_test ();
-  log_test ();
-  log10_test ();
-  log1p_test ();
-  log2_test ();
+  /* log: see tst-log-ulp.c */
+  /* log10: see tst-log-ulp.c */
+  /* log1p: see tst-cbrt-ulp.c */
+  /* log2: see tst-log-ulp.c */
   logb_test ();
   modf_test ();
   ilogb_test ();
@@ -4976,36 +3786,37 @@ main (int argc, char **argv)
   significand_test ();
 
   /* Power and absolute value functions:  */
-  cbrt_test ();
+  /* cbrt: see tst-cbrt-ulp.c */
   fabs_test ();
-  hypot_test ();
-  pow_test ();
-  sqrt_test ();
+  /* hypot: see tst-hypot-ulp.c */
+  pow_test ();		/* the C99 special cases; accuracy: tst-pow-ulp.c */
+  /* sqrt: see tst-sqrt-ulp.c */
 
   /* Error and gamma functions:  */
-  erf_test ();
-  erfc_test ();
-  gamma_test ();
-  lgamma_test ();
-  tgamma_test ();
+  /* erf: see tst-erf-ulp.c */
+  /* erfc: see tst-erf-ulp.c */
+  /* lgamma and gamma: see tst-lgamma-ulp.c */
+  /* tgamma: see tst-tgamma-ulp.c */
 
   /* Nearest integer functions:  */
   ceil_test ();
   floor_test ();
   nearbyint_test ();
   rint_test ();
-#if 0
+  /* These four change the rounding mode, so they need fenv.  Only 17 of the
+     33 ports have it; the rest do not even have fesetround to call.  */
+#ifdef __UCLIBC_HAS_FENV__
   rint_test_tonearest ();
   rint_test_towardzero ();
   rint_test_downward ();
   rint_test_upward ();
+#endif
   lrint_test ();
   llrint_test ();
   round_test ();
   lround_test ();
   llround_test ();
   trunc_test ();
-#endif
 
   /* Remainder functions:  */
   fmod_test ();
@@ -5023,7 +3834,7 @@ main (int argc, char **argv)
   fmin_test ();
 
   /* Multiply and add:  */
-  fma_test ();
+  /* fma: see tst-fma-ulp.c */
 
 
   /* Complex functions:  */
@@ -5059,17 +3870,12 @@ main (int argc, char **argv)
 #endif
 #endif /* __CHK_COMPLEX_STUFF */
 
-#if 0
-  /* Bessel functions:  */
-#if defined __DO_XSI_MATH__ && !(defined TEST_LDOUBLE || defined TEST_FLOAT)
-  j0_test ();
-  j1_test ();
-  jn_test ();
-  y0_test ();
-  y1_test ();
-  yn_test ();
-#endif /* __DO_XSI_MATH__ */
-#endif
+  /* Bessel functions.  Only for double: w_j0f.c and w_j0l.c hide their entry
+     points behind #ifndef __DO_XSI_MATH__, so the float and long double names
+     do not exist when XSI math is on -- which looks like the guard is the wrong
+     way round, since w_j0.c has none.  */
+  /* j0, j1, jn, y0, y1, yn: see tst-bessel-ulp.c.  These calls had been
+     behind #if 0, so none of the six had ever been tested.  */
 
   if (output_ulps)
     fclose (ulps_file);
@@ -5077,6 +3883,9 @@ main (int argc, char **argv)
   printf ("\nTest suite completed:\n");
   printf ("  %d test cases plus %d tests for exception flags executed.\n",
 	  noTests, noExcTests);
+  if (noExcSkipped)
+    printf ("  %d exception expectations skipped -- no fenv on this port.\n",
+	    noExcSkipped);
   if (noXFails)
     printf ("  %d expected failures occurred.\n", noXFails);
   if (noXPasses)

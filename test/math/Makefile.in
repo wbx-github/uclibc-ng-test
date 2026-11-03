@@ -8,10 +8,7 @@ O2_TWINS := 1
 # program of its own.
 TESTS := $(filter-out libm-test,$(patsubst %.c,%,$(wildcard *.c)))
 
-# The suite does not read uClibc-ng's .config, so this used to sit behind an
-# always-empty UCLIBC_HAS_LONG_DOUBLE_MATH; basic-test has always been built
-# without its long double part.
-CFLAGS_basic-test := -DNO_LONG_DOUBLE
+
 
 DODIFF_rint     := 1
 DODIFF_signgam  := 1
@@ -22,6 +19,7 @@ ifeq ($(TARGET_ARCH),sh)
 CFLAGS_basic-test += -mieee
 endif
 EXTRA_CFLAGS    := -fno-builtin
+
 EXTRA_LDFLAGS   := -lm
 
 PERL := perl
@@ -29,14 +27,8 @@ PERL := perl
 MDEPS := $(wildcard test-*.c)
 $(MDEPS): libm-test.c
 
-ULP_SUFFIX :=
-ifeq ($(TARGET_ARCH),mips)
-ULP_SUFFIX:=$(if $(CONFIG_MIPS_N64_ABI),64,32)
-endif
-
-TARGET_ULP := $(if $(wildcard libm-test-ulps-$(TARGET_ARCH)$(ULP_SUFFIX)),$(TARGET_ARCH)$(ULP_SUFFIX),generic)
-
-libm-test.c: libm-test-ulps-$(TARGET_ULP) libm-test.inc gen-libm-test.pl
-	$(Q)$(PERL) ./gen-libm-test.pl -u libm-test-ulps-$(TARGET_ULP) ./libm-test.inc -o "." 2>&1 > /dev/null
+# One table for all targets -- see the comment in libm-test-ulps for why.
+libm-test.c: libm-test-ulps libm-test.inc gen-libm-test.pl
+	$(Q)$(PERL) ./gen-libm-test.pl -u libm-test-ulps ./libm-test.inc -o "." 2>&1 > /dev/null
 
 EXTRA_CLEAN := libm-test.c libm-test-ulps.h

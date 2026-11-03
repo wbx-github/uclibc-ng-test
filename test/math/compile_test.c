@@ -1,6 +1,18 @@
 #include <math.h>
+#include <stdio.h>
 
-static int testf(float float_x, long double long_double_x, /*float complex float_complex_x,*/ int int_x, long long_x)
+/* testl below calls some sixty *l entry points, which libm has only when it
+   was built with UCLIBC_HAS_LONG_DOUBLE_MATH -- otherwise this does not link.
+   math.h reports that as __NO_LONG_DOUBLE_MATH, so ask the header: the test
+   suite never reads uClibc-ng's .config and the Makefile cannot tell.
+   testf stays either way; its only long double is the second argument of
+   nexttowardf, which exists regardless.  */
+#ifdef __NO_LONG_DOUBLE_MATH
+# define NO_LONG_DOUBLE 1
+#endif
+
+/* External, not static, and that is the point: see main.  */
+int testf(float float_x, long double long_double_x, /*float complex float_complex_x,*/ int int_x, long long_x)
 {
 int r = 0;
 r += acosf(float_x);
@@ -67,7 +79,84 @@ r += truncf(float_x);
 return r;
 }
 
-static int testl(long double long_double_x, int int_x, long long_x)
+/* The double entry points.  This test had a float and a long double section
+   and none for double -- the width every program reaches for first was the
+   one it did not link.  The list is the union of the other two: the names
+   only testf had (gamma, scalb, significand), the ones only testl had
+   (nextafter and the five __ classification helpers the type-generic macros
+   dispatch to), and everything both share.  */
+int testd(double double_x, long double long_double_x, int int_x, long long_x)
+{
+int r = 0;
+r += __finite(double_x);
+r += __fpclassify(double_x);
+r += __isinf(double_x);
+r += __isnan(double_x);
+r += __signbit(double_x);
+r += acos(double_x);
+r += acosh(double_x);
+r += asin(double_x);
+r += asinh(double_x);
+r += atan2(double_x, double_x);
+r += atan(double_x);
+r += atanh(double_x);
+r += cbrt(double_x);
+r += ceil(double_x);
+r += copysign(double_x, double_x);
+r += cos(double_x);
+r += cosh(double_x);
+r += erfc(double_x);
+r += erf(double_x);
+r += exp2(double_x);
+r += exp(double_x);
+r += expm1(double_x);
+r += fabs(double_x);
+r += fdim(double_x, double_x);
+r += floor(double_x);
+r += fma(double_x, double_x, double_x);
+r += fmax(double_x, double_x);
+r += fmin(double_x, double_x);
+r += fmod(double_x, double_x);
+r += frexp(double_x, &int_x);
+r += gamma(double_x);
+r += hypot(double_x, double_x);
+r += ilogb(double_x);
+r += ldexp(double_x, int_x);
+r += lgamma(double_x);
+r += llrint(double_x);
+r += llround(double_x);
+r += log10(double_x);
+r += log1p(double_x);
+r += log2(double_x);
+r += logb(double_x);
+r += log(double_x);
+r += lrint(double_x);
+r += lround(double_x);
+r += modf(double_x, &double_x);
+r += nearbyint(double_x);
+r += nextafter(double_x, double_x);
+r += nexttoward(double_x, long_double_x);
+r += pow(double_x, double_x);
+r += remainder(double_x, double_x);
+r += remquo(double_x, double_x, &int_x);
+r += rint(double_x);
+r += round(double_x);
+r += scalb(double_x, double_x);
+r += scalbln(double_x, long_x);
+r += scalbn(double_x, int_x);
+r += significand(double_x);
+r += sin(double_x);
+r += sinh(double_x);
+r += sqrt(double_x);
+r += tan(double_x);
+r += tanh(double_x);
+r += tgamma(double_x);
+r += trunc(double_x);
+return r;
+}
+
+#ifndef NO_LONG_DOUBLE
+int testl(long double long_double_x, int int_x, long long_x)
 {
 int r = 0;
 r += __finitel(long_double_x);
@@ -133,9 +222,27 @@ r += tgammal(long_double_x);
 r += truncl(long_double_x);
 return r;
 }
+#endif
 
+/* Nothing here calls the three functions above, and nothing needs to: this is
+   a link test, and giving them external linkage is what makes it one.  The
+   compiler may not discard an externally visible function, so every call in
+   them has to resolve.
+
+   It used to be "return 5 & ((long)&testf) & ((long)&testl) & 2;", with the
+   comment "Always 0 but gcc hopefully won't be able to notice".  gcc does
+   notice: 5 & 2 is 0 whatever the addresses are, so it folded the expression,
+   the address-taking went with it, and the three static functions became
+   unreferenced and were dropped.  Measured on i686 with gcc 13 at -O2, the
+   binary held main alone and called nothing -- 1 undefined symbol against 184
+   at -O0.  Test.mak builds every test twice, plain and at -O2, so half of
+   this test was checking nothing at all.  */
 int main(int argc, char **argv)
 {
-        /* Always 0 but gcc hopefully won't be able to notice */
-        return 5 & ((long)&testf) & ((long)&testl) & 2;
+#ifdef NO_LONG_DOUBLE
+        puts("SKIP: built without UCLIBC_HAS_LONG_DOUBLE_MATH, libm has no *l");
+        return 23;	/* 23 is the runner's skip status */
+#else
+        return 0;
+#endif
 }

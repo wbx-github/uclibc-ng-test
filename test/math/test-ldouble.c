@@ -16,6 +16,35 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+/* Both before math.h: __NO_MATH_INLINES so the header leaves the inline
+   definitions out, _GNU_SOURCE for M_PIl and the other GNU names that
+   libm-test.inc uses -- it defines _GNU_SOURCE itself, but only reaches that
+   point after the include below.  */
+#ifndef __NO_MATH_INLINES
+# define __NO_MATH_INLINES
+#endif
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif
+
+#include <math.h>
+
+/* Without UCLIBC_HAS_LONG_DOUBLE_MATH libm has no *l entry point at all and
+   the test below would not link, so say so and skip.  math.h reports it as
+   __NO_LONG_DOUBLE_MATH; the Makefile cannot, because the test suite never
+   reads uClibc-ng's .config.  23 is the runner's skip status.  */
+#ifdef __NO_LONG_DOUBLE_MATH
+
+# include <stdio.h>
+
+int main(void)
+{
+	puts("SKIP: built without UCLIBC_HAS_LONG_DOUBLE_MATH, libm has no *l");
+	return 23;
+}
+
+#else
+
 #define FUNC(function) function##l
 #define FLOAT long double
 #define TEST_MSG "testing long double (without inline functions)\n"
@@ -26,8 +55,6 @@
 #define PRINTF_NEXPR "Lf"
 #define TEST_LDOUBLE 1
 
-#ifndef __NO_MATH_INLINES
-# define __NO_MATH_INLINES
-#endif
-
 #include "libm-test.c"
+
+#endif

@@ -1,0 +1,25 @@
+# Expected deviation from the exact result, in ulp, for the whole library.
+#
+# This file is empty, and that is the point.
+#
+# It began as glibc's twenty-one per-architecture files, measured on glibc's
+# implementations.  They were wrong for us in both directions -- too tight where
+# our fdlibm is weaker, too loose elsewhere -- and libm-test-ulps-generic, the
+# fallback for the eight architectures without a file of their own, held no data
+# at all, so it demanded a perfect result from hppa, nios2, alpha, sparc64,
+# bfin, c6x, cris and avr32.  They were replaced by one file for every target,
+# with 97 measured lines covering the eight functions that needed them: cos,
+# erf, erfc, lgamma, log, log10, tan and tgamma.
+#
+# All eight have since moved to a tst-*-ulp.c of their own, which measures
+# against the correctly rounded result from CORE-MATH over about a thousand
+# points instead of glibc's expectation at ten, and states a budget per
+# implementation variant.  Nothing in libm-test.inc needs an allowance any more:
+# every function still tested there is either exact by definition -- ceil,
+# copysign, frexp, nextafter, and sqrt and fma, which IEEE 754 requires
+# correctly rounded -- or hits its named points on every target.
+#
+# So a new entry here should be the second choice.  If a function deviates,
+# prefer writing the tst-*-ulp.c: a budget over a dense sweep says what the
+# implementation does, an entry here only says that one point was allowed to
+# slip, and it says it for every target at once.  gen/README.md has the recipe.
