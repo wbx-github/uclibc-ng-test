@@ -4,6 +4,7 @@
    in both directions.  Every result is read into a buffer filled with a
    pattern, so that a field the conversion never writes shows up.  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
@@ -92,8 +93,44 @@ static void check_timer(int which)
 	check_off("disarmed", which);
 }
 
+/* With a time_t wider than the kernel's 32-bit seconds, a value that does
+   not fit must fail with EOVERFLOW and leave the timer alone, not wrap
+   around to a short timer.  */
+static void check_overflow(void)
+{
+	/* 2^32 + 5 seconds: wraps to 5 when cut to 32 bits.  */
+	const long long wide = 0x100000005LL;
+	struct itimerval zero = { { 0, 0 }, { 0, 0 } };
+	struct itimerval big[2] = {
+		{ { 0, 0 }, { 0, 0 } },
+		{ { 0, 0 }, { 0, 0 } },
+	};
+	int i;
+
+	if (sizeof(time_t) <= sizeof(long))
+		return;
+
+	big[0].it_value.tv_sec = wide;
+	big[1].it_value.tv_sec = 5;
+	big[1].it_interval.tv_sec = wide;
+
+	for (i = 0; i < 2; i++) {
+		errno = 0;
+		if (setitimer(ITIMER_REAL, &big[i], NULL) != -1 || errno != EOVERFLOW) {
+			printf("ITIMER_REAL: setitimer with %s 2^32+5 s: "
+			       "got errno %d, want EOVERFLOW\n",
+			       i ? "interval" : "value", errno);
+			err = 1;
+		}
+		check_off("after overflow", ITIMER_REAL);
+		/* A wrapped timer would fire within seconds; stop it.  */
+		setitimer(ITIMER_REAL, &zero, NULL);
+	}
+}
+
 int main(void)
 {
+	check_overflow();
 	check_timer(ITIMER_REAL);
 	check_timer(ITIMER_VIRTUAL);
 	check_timer(ITIMER_PROF);
