@@ -1,6 +1,7 @@
-/* utimes, lutimes and futimesat take struct timeval, which the kernel's old
-   system calls expect with 32-bit fields.  On a 32-bit target with a 64-bit
-   time_t the library therefore has to convert, or go through utimensat.
+/* utimes, lutimes and futimesat take struct timeval, utime a
+   struct utimbuf of two time_t; the kernel's old system calls expect both
+   with 32-bit fields.  On a 32-bit target with a 64-bit time_t the library
+   therefore has to convert, or go through utimensat.
    Each call must leave the same timestamps as utimensat does for the same
    times, so the test does not depend on what the file system can store
    (nanoseconds, dates after 2038).  */
@@ -16,6 +17,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <utime.h>
 
 static int err;
 
@@ -122,6 +124,25 @@ int main(void)
 		err = 1;
 	} else
 		compare("futimesat", file, 1, want);
+
+	/* utime takes whole seconds in a struct utimbuf of two time_t.  */
+	{
+		struct utimbuf ub = { tv[0].tv_sec, tv[1].tv_sec };
+		struct timespec swant[2] = { { tv[0].tv_sec, 0 }, { tv[1].tv_sec, 0 } };
+
+		if (utimensat(AT_FDCWD, file, swant, 0) != 0
+		    || stamps(file, 1, swant) != 0) {
+			perror("utimensat (whole seconds)");
+			err = 1;
+		} else {
+			reset(file, 0);
+			if (utime(file, &ub) != 0) {
+				printf("utime: %s\n", strerror(errno));
+				err = 1;
+			} else
+				compare("utime", file, 1, swant);
+		}
+	}
 
 	reset(link, AT_SYMLINK_NOFOLLOW);
 	if (lutimes(link, tv) != 0) {
