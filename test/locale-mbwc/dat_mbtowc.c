@@ -179,8 +179,9 @@ TST_MBTOWC tst_mbtowc_loc [] = {
 	{
 	  {
 	    { 0,  1,  1,   0x007F },
-	    { EILSEQ,  1, -1,   0x0000 },
-	    { EILSEQ,  1, -1,   0x0000 },
+	    /* POSIX: every byte is a character in the C locale.  */
+	    { 0,  1,  1,   0xDF80 },
+	    { 0,  1,  1,   0xDF81 },
 	  }
 	}
       },
