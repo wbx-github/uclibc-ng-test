@@ -2,14 +2,14 @@
 
 #include <stdlib.h>
 
-#define LARGE_BUFFER (1 << 20) /* idea is to span a lot of pages */
+#define BUFFER (1 << 19)
 
 int main(int argc, char *argv[])
 {
 	int count = 20;
 	char *ptr = NULL;
 	while (count--) {
-		ptr = realloc(ptr, LARGE_BUFFER);
+		ptr = realloc(ptr, BUFFER);
 		ptr = realloc(ptr, 1);
 	}
 	free(ptr);
