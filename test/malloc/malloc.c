@@ -5,9 +5,15 @@
 #include <string.h>
 #include <stdio.h>
 
+#if !defined(__ARCH_USE_MMU__)
+#define N_PTRS 32
+#define N_ALLOCS 100
+#define MAX_SIZE 0x8000
+#else
 #define N_PTRS 100
 #define N_ALLOCS 100
 #define MAX_SIZE 0x10000
+#endif
 
 #define random_size()	(random()%MAX_SIZE)
 #define random_ptr()	(random()%N_PTRS)
