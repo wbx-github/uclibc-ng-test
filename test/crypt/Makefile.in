@@ -5,4 +5,5 @@ EXTRA_LDFLAGS := -lcrypt
 
 OPTS_crypt = < crypt.input
 
-WRAPPER := env TIMEOUTFACTOR=50
+# sha512c-test needs about 8 min on the H8S EDOSK2674 (6 s x 200 = 20 min limit)
+WRAPPER := env TIMEOUTFACTOR=200
