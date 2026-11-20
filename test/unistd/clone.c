@@ -36,7 +36,11 @@ static int clone_main(void *arg)
 int main(void)
 {
 	int clone1, clone2, clone3;
-	char clone1_stack[8192], clone2_stack[8192], clone3_stack[8192];
+	/*
+	 * static: 3 x 8 KiB on main()'s stack overflows the small default
+	 * stack of noMMU (FLAT) binaries.
+	 */
+	static char clone1_stack[8192], clone2_stack[8192], clone3_stack[8192];
 	int status, nostatus, result, wpid;
 
 	signal(SIGCHLD, child_handler);
