@@ -28,7 +28,12 @@ int main(int argc, char **argv)
 #endif
 #ifdef __UCLIBC__
 	/* assume there is at least one resolver configured */
+# ifdef __UCLIBC_HAS_IPV6__
 	assert (state._u._ext.nscount > 0);
+# else
+	/* without IPv6, res_ninit() only fills in the IPv4 list */
+	assert (state.nscount > 0);
+# endif
 #else
 	assert (state._u._ext.nscount == 0);
 #endif
