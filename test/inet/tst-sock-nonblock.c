@@ -25,9 +25,14 @@ do_test(void)
 	char buf;
 
 	fd = socket(AF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+	if (fd < 0 && errno == EINVAL) {
+		/* SOCK_NONBLOCK needs Linux 2.6.27 or newer */
+		puts("SKIP: kernel does not support SOCK_NONBLOCK");
+		return 0;
+	}
 	if (fd < 0) {
 		perror("socket()");
-		result = 1;
+		return 1;
 	}
 
 	memset(&sa, 0, sizeof(sa));
