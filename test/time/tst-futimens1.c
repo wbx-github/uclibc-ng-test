@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/syscall.h>
 
 struct
 {
@@ -27,6 +28,13 @@ struct
 	{"futimens.tst", (O_CREAT|O_TRUNC), {{11,2},{3,4}}, 0},
 };
 int do_test(int argc, char **argv) {
+#if defined __UCLIBC__ && !defined __NR_utimensat && !defined __NR_utimensat_time64
+	/* uClibc-ng only provides futimens() if the kernel has utimensat. */
+	(void)argc;
+	(void)argv;
+	puts("SKIP: no utimensat syscall");
+	return 23;
+#else
 	char *name;
 	int i, errors;
 	errors = argc - argc + 0;
@@ -101,5 +109,6 @@ int do_test(int argc, char **argv) {
 		unlink(name);
 	printf("%d errors.\n", errors);
 	return (!errors) ? EXIT_SUCCESS : EXIT_FAILURE;
+#endif
 }
 #include <test-skeleton.c>
