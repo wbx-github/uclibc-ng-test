@@ -13,6 +13,15 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/resource.h>
+#include <sys/syscall.h>
+
+/* uClibc-ng only provides prlimit() if the kernel has prlimit64 (Linux
+   2.6.36+).  Without it, still test getrlimit()/setrlimit().  */
+#if defined __UCLIBC__ && !defined __NR_prlimit64
+# define HAVE_PRLIMIT 0
+#else
+# define HAVE_PRLIMIT 1
+#endif
 
 #define __ASSERT(x, f, l) \
 	if (!(x)) { \
@@ -54,17 +63,28 @@ static void test_setrlimit(int rnum, rlim_t new_cur, rlim_t new_max)
 
 static void test_prlimit_get(int rnum, rlim_t exp_cur, rlim_t exp_max)
 {
+#if HAVE_PRLIMIT
 	struct rlimit r;
 
 	ASSERT(prlimit(0, rnum, NULL, &r) == 0);
 	ASSERT(r.rlim_cur == exp_cur);
 	ASSERT(r.rlim_max == exp_max);
+#else
+	(void)rnum;
+	(void)exp_cur;
+	(void)exp_max;
+#endif
 }
 
 static void test_prlimit_set(int rnum, rlim_t new_cur, rlim_t new_max)
 {
+#if HAVE_PRLIMIT
 	struct rlimit r = {.rlim_cur = new_cur, .rlim_max = new_max};
 	ASSERT(prlimit(0, rnum, &r, NULL) == 0);
+#else
+	/* Keep the following getrlimit() checks valid.  */
+	test_setrlimit(rnum, new_cur, new_max);
+#endif
 }
 
 #if defined(__USE_LARGEFILE64)
