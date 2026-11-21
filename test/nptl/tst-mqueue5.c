@@ -119,7 +119,7 @@ thr (void *arg)
 
   if (rtmin_cnt != 2)
     {
-      puts ("SIGRTMIN signal in child did not arrive");
+      puts ("SIGRTMIN signal in thread did not arrive");
       result = 1;
     }
   else if (rtmin_pid != getppid ()
@@ -406,6 +406,16 @@ do_child (const char *name, pthread_barrier_t *b2, pthread_barrier_t *b3,
       result = 1;
     }
 
+  /* Ensure the thr thread gets the signal, not us.  */
+  sigset_t set;
+  sigemptyset (&set);
+  sigaddset (&set, SIGRTMIN);
+  if (pthread_sigmask (SIG_BLOCK, &set, NULL))
+    {
+      printf ("Failed to block SIGRTMIN in child: %m\n");
+      result = 1;
+    }
+
   (void) pthread_barrier_wait (b2);
 
   /* Parent calls mqsend (q), which should wake up mqrecv (q)
@@ -514,6 +524,13 @@ do_child (const char *name, pthread_barrier_t *b2, pthread_barrier_t *b3,
   if (rtmin_cnt != 2)
     {
       puts ("SIGRTMIN signal caught while notification has been disabled");
+      result = 1;
+    }
+
+  /* Re-enable test signals before cleaning up the thread.  */
+  if (pthread_sigmask (SIG_UNBLOCK, &set, NULL))
+    {
+      printf ("Failed to unblock SIGRTMIN in child: %m\n");
       result = 1;
     }
 
