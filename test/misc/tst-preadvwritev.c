@@ -18,6 +18,15 @@
 
 #define __USE_MISC
 #include <sys/uio.h>
+#include <sys/syscall.h>
+
+/* uClibc-ng only provides preadv()/pwritev() if the kernel has the
+   syscalls (Linux 2.6.30+).  */
+#if defined __UCLIBC__ && (!defined __NR_preadv || !defined __NR_pwritev)
+# define HAVE_PREADV 0
+#else
+# define HAVE_PREADV 1
+#endif
 
 static void do_prepare (void);
 #define PREPARE(argc, argv)     do_prepare ()
@@ -39,6 +48,7 @@ do_prepare (void)
     }
 }
 
+#if HAVE_PREADV
 #define FAIL(str) \
   do { printf ("error: %s (line %d)\n", str, __LINE__); return 1; } while (0)
 
@@ -111,8 +121,15 @@ do_test_with_offset (off_t offset)
   return 0;
 }
 
+#endif
+
 static int
 do_test (void)
 {
+#if HAVE_PREADV
   return do_test_with_offset (0);
+#else
+  printf ("SKIP: preadv/pwritev syscalls not available\n");
+  return 23;
+#endif
 }
