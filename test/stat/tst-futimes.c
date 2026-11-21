@@ -15,6 +15,17 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/syscall.h>
+
+#if defined __UCLIBC__ && !defined __NR_utimensat && !defined __NR_utimensat_time64
+/* The test compares against utimensat(), which uClibc-ng only provides if
+   the kernel has the syscall (futimes() needs it as well).  */
+int main(void)
+{
+	puts("SKIP: no utimensat syscall");
+	return 23;
+}
+#else
 
 static const struct timeval tv[2] = {
 	{ 1000000000, 250000 },
@@ -102,3 +113,4 @@ out:
 	unlink(file);
 	return err;
 }
+#endif

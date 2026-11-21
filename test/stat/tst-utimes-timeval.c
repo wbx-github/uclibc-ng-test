@@ -18,6 +18,17 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <utime.h>
+#include <sys/syscall.h>
+
+#if defined __UCLIBC__ && !defined __NR_utimensat && !defined __NR_utimensat_time64
+/* The test compares against utimensat(), which uClibc-ng only provides if
+   the kernel has the syscall (futimes() needs it as well).  */
+int main(void)
+{
+	puts("SKIP: no utimensat syscall");
+	return 23;
+}
+#else
 
 static int err;
 
@@ -157,3 +168,4 @@ out:
 	rmdir(dir);
 	return err;
 }
+#endif
