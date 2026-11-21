@@ -224,16 +224,6 @@ if arch("or1k"):
     disable("unistd/tst-pselect")
 if arch("h8300"):
     disable("string/stratcliff")
-if arch("v850"):
-    disable("misc/tst-inotify", "misc/tst-preadvwritev",
-            "misc/tst-rlimit", "misc/tst-rlimit64",
-            "unistd/tst-fallocate", "time/tst-futimens1",
-            "time/tst-timerfd", "signal/tst-signalfd",
-            "rt/tst-posix_spawn", "unistd/tst-posix_fallocate",
-            "rt/tst-timer-gettime", "stat/tst-futimes",
-            "stat/tst-utimes-timeval", "time/tst-timerfd-gettime",
-            "setjmp/bug269-setjmp", "setjmp/tst-setjmp",
-            "time/clocktest", "unistd/clone", "unistd/tst-pselect")
 
 # kvx: binutils keeps one "GOT entry initialised" mark per symbol, not per
 # TLS model (bfd/elfnn-kvx.c, symbol_got_offset_mark).  When a symbol is
