@@ -9,7 +9,17 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/syscall.h>
 #include <sys/timerfd.h>
+
+#if defined __UCLIBC__ && !defined __NR_timerfd_create
+/* uClibc-ng only provides timerfd_*() if the kernel has the syscalls. */
+int main(void)
+{
+	puts("SKIP: no timerfd syscalls");
+	return 0;
+}
+#else
 
 static int err;
 
@@ -85,3 +95,4 @@ int main(void)
 	close(fd);
 	return err;
 }
+#endif
