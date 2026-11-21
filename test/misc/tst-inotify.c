@@ -14,10 +14,17 @@
 #include <inttypes.h>
 #include <sys/inotify.h>
 #include <sys/fcntl.h>
+#include <sys/syscall.h>
 
 static int
 do_test(void)
 {
+#if defined __UCLIBC__ && !defined __NR_inotify_init1
+	/* uClibc-ng only provides inotify_init1() if the kernel has the
+	   syscall (Linux 2.6.27+).  */
+	printf("SKIP: inotify_init1 syscall not available\n");
+	return 23;
+#else
 	int ifd, fd, ret, result = 0;
 	struct inotify_event e;
 	char tfile[] = "/tmp/inotify.XXXXXX";
@@ -58,6 +65,7 @@ do_test(void)
 	}
 
 	return result;
+#endif
 }
 
 #define TIMEOUT 5
