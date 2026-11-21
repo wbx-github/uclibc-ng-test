@@ -1,3 +1,4 @@
+#include <features.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -5,6 +6,11 @@
 static int
 do_test (void)
 {
+#if defined __UCLIBC__ && !defined __UCLIBC_HAS_IPV6__
+  /* getnameinfo() rightly returns EAI_FAMILY for AF_INET6 without IPv6.  */
+  puts ("SKIP: uClibc-ng built without IPv6 support");
+  return 0;
+#else
   int retval = 0;
 
   struct sockaddr_in6 s;
@@ -35,6 +41,7 @@ do_test (void)
     }
 
   return retval;
+#endif
 }
 
 #define TEST_FUNCTION do_test ()
