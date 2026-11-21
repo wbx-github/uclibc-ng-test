@@ -9,7 +9,7 @@ do_test (void)
 #if defined __UCLIBC__ && !defined __UCLIBC_HAS_IPV6__
   /* getnameinfo() rightly returns EAI_FAMILY for AF_INET6 without IPv6.  */
   puts ("SKIP: uClibc-ng built without IPv6 support");
-  return 0;
+  return 23;
 #else
   int retval = 0;
 

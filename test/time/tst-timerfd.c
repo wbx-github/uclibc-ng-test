@@ -26,7 +26,7 @@ do_test(void)
 #if defined __UCLIBC__ && !defined __NR_timerfd_create
 	/* uClibc-ng only provides timerfd_*() if the kernel has the syscalls. */
 	puts("SKIP: no timerfd syscalls");
-	return 0;
+	return 23;
 #else
 	int fd, ret, result = 0;
 	struct itimerspec s;

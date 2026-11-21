@@ -17,7 +17,7 @@
 int main(void)
 {
 	puts("SKIP: no timerfd syscalls");
-	return 0;
+	return 23;
 }
 #else
 

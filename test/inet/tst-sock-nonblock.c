@@ -28,7 +28,7 @@ do_test(void)
 	if (fd < 0 && errno == EINVAL) {
 		/* SOCK_NONBLOCK needs Linux 2.6.27 or newer */
 		puts("SKIP: kernel does not support SOCK_NONBLOCK");
-		return 0;
+		return 23;
 	}
 	if (fd < 0) {
 		perror("socket()");

@@ -26,7 +26,7 @@ do_test (void)
 	   The pending signal is delivered in between and select() never returns,
 	   which is exactly the race this test checks for.  */
 	puts("SKIP: no pselect6 syscall, pselect() emulation is not atomic");
-	return 0;
+	return 23;
 #endif
 
 	// block SIGALRM. We want to handle it only when we're ready
