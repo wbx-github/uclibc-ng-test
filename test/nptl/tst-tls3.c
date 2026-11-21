@@ -69,7 +69,15 @@ pthread_barrier_t b;
 #define TOTAL_SIGS 1000
 int nsigs;
 
-#define TCB_ALIGNMENT 16
+/* Must not be stricter than TCB_ALIGNMENT in uClibc-ng's
+   libpthread/nptl/sysdeps/<arch>/pthreaddef.h.  */
+#if defined __nios2__
+# define TCB_ALIGNMENT 4
+#elif defined __arc__ || defined __metag__ || defined __sh__
+# define TCB_ALIGNMENT 8
+#else
+# define TCB_ALIGNMENT 16
+#endif
 
 int
 do_test (void)
