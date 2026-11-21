@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 
 #ifndef TST_POSIX_FALLOCATE64
 # define stat64 stat
@@ -32,6 +33,11 @@ do_prepare (void)
 static int
 do_test (void)
 {
+#if defined __UCLIBC__ && !defined __NR_fallocate
+  /* uClibc-ng only provides posix_fallocate() if the kernel has fallocate. */
+  puts ("SKIP: no fallocate syscall");
+  return 23;
+#else
   struct stat64 st;
 
   if (fstat64 (fd, &st) != 0)
@@ -124,4 +130,5 @@ do_test (void)
   close (fd);
 
   return 0;
+#endif
 }
