@@ -13,12 +13,18 @@
 #include <errno.h>
 #include <error.h>
 #include <signal.h>
+#include <sys/syscall.h>
 #include <sys/signalfd.h>
 #include <sys/fcntl.h>
 
 static int
 do_test(void)
 {
+#if defined __UCLIBC__ && !defined __NR_signalfd4 && !defined __NR_signalfd
+	/* uClibc-ng only provides signalfd() if the kernel has the syscall. */
+	puts("SKIP: no signalfd syscall");
+	return 23;
+#else
 	int fd, ret, result = 0;
 	struct signalfd_siginfo ssi;
 	sigset_t mask;
@@ -56,6 +62,7 @@ do_test(void)
 	}
 
 	return result;
+#endif
 }
 
 #define TIMEOUT 5
