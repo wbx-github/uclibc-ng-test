@@ -9,6 +9,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <sys/syscall.h>
+
+#if defined __UCLIBC__ && !defined __NR_timer_create
+/* uClibc-ng only provides timer_*() if the kernel has the syscalls. */
+int main(void)
+{
+	puts("SKIP: no POSIX timer syscalls");
+	return 23;
+}
+#else
 
 static int err;
 
@@ -98,3 +108,4 @@ int main(void)
 	timer_delete(t);
 	return err;
 }
+#endif
