@@ -220,8 +220,6 @@ if arch("microblaze") or arch("nds32"):
     disable("pthread/ex3")
 if arch("cris"):
     disable("pthread/ex2", "pthread/ex5")
-if arch("or1k"):
-    disable("unistd/tst-pselect")
 if arch("h8300"):
     disable("string/stratcliff")
 
